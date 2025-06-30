@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id        String   @id
+  name      String
+  price     Int
+  available Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model blockbooking {
+  id        Int       @id @default(autoincrement())
+  userid    Int
+  roomid    Int
+  checkin   DateTime  @db.Date
+  checkout  DateTime  @db.Date
+  createdat DateTime? @default(now()) @db.Timestamp(6)
+  room      room      @relation(fields: [roomid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model booking {
+  id            Int      @id @default(autoincrement())
+  userid        Int
+  nameroomid    Int
+  statusbooking String?  @default("pending") @db.VarChar(20)
+  checkin       DateTime @db.Date
+  checkout      DateTime @db.Date
+  totalprice    Decimal? @db.Decimal(10, 2)
+  paidamount    Decimal? @db.Decimal(10, 2)
+  note          String?
+  room          room     @relation(fields: [nameroomid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "booking_roomid_fkey")
+  users         users    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model room {
+  id           Int            @id(map: "nameroom_pkey") @default(autoincrement())
+  nameroom     String         @db.VarChar(100)
+  typeroom     String?        @db.VarChar(50)
+  description  String?
+  price        Decimal?       @db.Decimal(10, 2)
+  url_picture  String[]
+  statusroom   String?        @default("available") @db.VarChar(20)
+  blockbooking blockbooking[]
+  booking      booking[]
+}
+
+model users {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(100)
+  email        String         @unique @db.VarChar(100)
+  password     String         @db.VarChar(255)
+  blockbooking blockbooking[]
+  booking      booking[]
+}
