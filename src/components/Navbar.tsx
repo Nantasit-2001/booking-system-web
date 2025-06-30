@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { scrollToSection } from '@/utils/scroll'; // นำเข้า function scrollToSection
+import { usePathname, useRouter } from 'next/navigation';
+
 // สมมติว่ามีข้อมูลผู้ใช้ที่ Login แล้ว
 // คุณสามารถแทนที่ด้วย Context API, Redux, Zustand หรือการเรียก API จริงๆ
 const isAuthenticated = false; // ตั้งค่าเป็น true เพื่อทดสอบว่า Login แล้ว
@@ -16,7 +18,8 @@ const Navbar = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null); // Ref สำหรับ Dropdown
   const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref สำหรับ Mobile Menu
-
+  const pathname = usePathname();
+  const router = useRouter();
   // Hook สำหรับปิด Dropdown เมื่อคลิกนอกพื้นที่
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,6 +42,14 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []); // [] เพื่อให้ useEffect ทำงานครั้งเดียว
+
+const handleNavigationToSection = (sectionId: string) => {
+  if (pathname === '/') {
+    scrollToSection(sectionId);
+  } else {
+    router.push(`/#${sectionId}`);
+  }
+};
 
   // Function สำหรับ Logout (คุณสามารถเพิ่ม Logic จริงๆ ที่นี่ได้)
   const handleLogout = () => {
@@ -88,12 +99,12 @@ const Navbar = () => {
           )}
           {!isAuthenticated && (
             <>
-              <button onClick={() => scrollToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
-                About
-              </button>
-              <button onClick={() => scrollToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
-                Contact
-              </button>
+<button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
+  About
+</button>
+<button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
+  Contact
+</button>
             </>
           )}
         </div>

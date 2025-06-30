@@ -33,7 +33,7 @@ const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch })
           <input
             type="date"
             id="check-in"
-            className="mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
+            className="text-gray-900 mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
             required
@@ -48,7 +48,7 @@ const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch })
           <input
             type="date"
             id="check-out"
-            className="mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
+            className="text-gray-900  mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
             required
@@ -62,7 +62,7 @@ const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch })
           </label>
           <select
             id="guests"
-            className="mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
+            className="text-gray-900 mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
             value={guests}
             onChange={(e) => setGuests(parseInt(e.target.value))}
           >

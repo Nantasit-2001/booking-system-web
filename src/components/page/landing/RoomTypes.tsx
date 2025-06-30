@@ -1,6 +1,6 @@
 'use client'; // เนื่องจากมีการใช้ useState และ input events
-import HotelRoomCard from "../card/RoomCard";
-import { scrollToSection } from "@/utils/scroll";
+import HotelRoomCard from "../../card/RoomCard";
+import { scrollToSection } from "../../../utils/scroll";
 const RoomTypes: React.FC = () => {
      const roomData = {
     imageUrl: '/images/deluxe-king-room.jpg', // ต้องมีภาพนี้อยู่ในโฟลเดอร์ public
@@ -18,7 +18,7 @@ const RoomTypes: React.FC = () => {
                 Choose from our variety of comfortable accommodations
             </p>
         </div>
-        <div className="flex flex-col gap-6 px-6 lg:px-18 md:gap-10 lg:flex-row lg:gap-10">
+        <div className="flex flex-col gap-6 px-6 md:gap-10 lg:flex-row lg:gap-10">
           <HotelRoomCard {...roomData} />
           <HotelRoomCard {...roomData} />
           <HotelRoomCard {...roomData} />

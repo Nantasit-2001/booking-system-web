@@ -1,3 +1,4 @@
+//No Use
 export interface Room {
   id: string;
   name: string;
@@ -35,4 +36,46 @@ export interface HotelRoomCardProps {
 // กำหนด Type สำหรับ Props ที่จะรับเข้ามา
 export interface SearchAvailableRoomsProps {
   onSearch: (checkIn: string, checkOut: string, guests: number) => void;
+}
+
+//No Use
+export interface RoomAdmin {
+  id: string;
+  name: string;
+  type: string;
+  pricePerNight: number;
+  status: 'Available' | 'Unavailable';
+}
+
+export interface BookingAdmin {
+  Booking_id: string;
+  User: string;
+  Email: string;
+  Room: string;
+  Floor: number;
+  status: 'Confirmed' | 'Pending' | 'Checked-in' | 'cancelled';
+  Check_in: string;
+  Total: string;
+  Paid_Amount: string | number;
+  Remaining: string | number;
+}
+
+export interface CardMetric {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode; // Or a specific icon component type
+  bgColor: string; // Tailwind background color class
+  textColor: string; // Tailwind text color class
+}
+
+// types/types.ts (if you have one, add this interface)
+export interface RoomDetail {
+    id: string;
+    name: string;
+    roomType: string;
+    pricePerNight: number;
+    maxGuests: number;
+    status: 'Available' | 'Unavailable' | 'Under Maintenance';
+    description: string;
+    images: string[];
 }
