@@ -43,7 +43,7 @@ fastify.post('/filter', async (request) => {
         },
         select: { room_id: true },
     });
-    const unavailableIds: number[] = reservations.map((r) => r.room_id);
+const unavailableIds: number[] = reservations.map((r:{ room_id: number }) => r.room_id);
 
     // 3. แยกห้องที่ว่างและไม่ว่าง
     const available = filteredRooms.filter(room => !unavailableIds.includes(room.id));
