@@ -2,12 +2,14 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import roomsRoutes from './routes/rooms';
 import adminRoomRoutes from './routes/admin/rooms';
+import clerkWebhook from './routes/clerkWebhook';
 const fastify = Fastify({ logger: true });
 
 const start = async () => {
   await fastify.register(cors, {
     origin: '*',
   });
+  fastify.register(clerkWebhook, { prefix: '/webhooks' });
   fastify.register(roomsRoutes, { prefix: '/rooms' });
   fastify.register(adminRoomRoutes, { prefix: '/admin/rooms' });
   try {
