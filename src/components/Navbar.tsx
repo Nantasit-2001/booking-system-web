@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { scrollToSection } from '@/utils/scroll'; // นำเข้า function scrollToSection
 import { usePathname, useRouter } from 'next/navigation';
-
+import { useClerk } from '@clerk/nextjs';
 // สมมติว่ามีข้อมูลผู้ใช้ที่ Login แล้ว
 // คุณสามารถแทนที่ด้วย Context API, Redux, Zustand หรือการเรียก API จริงๆ
 const isAuthenticated = false; // ตั้งค่าเป็น true เพื่อทดสอบว่า Login แล้ว
@@ -20,6 +20,7 @@ const Navbar = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref สำหรับ Mobile Menu
   const pathname = usePathname();
   const router = useRouter();
+  const { signOut } = useClerk();
   // Hook สำหรับปิด Dropdown เมื่อคลิกนอกพื้นที่
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,7 +54,7 @@ const handleNavigationToSection = (sectionId: string) => {
 
   // Function สำหรับ Logout (คุณสามารถเพิ่ม Logic จริงๆ ที่นี่ได้)
   const handleLogout = () => {
-    console.log('User logged out!');
+    signOut(() => { window.location.href = '/'; })
     // เพิ่ม Logic การ Logout จริงๆ เช่น ลบ Token, Redirect ไปหน้า Login
     // ตัวอย่าง: router.push('/login');
     setIsProfileDropdownOpen(false); // ปิด Dropdown
@@ -99,12 +100,12 @@ const handleNavigationToSection = (sectionId: string) => {
           )}
           {!isAuthenticated && (
             <>
-<button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
-  About
-</button>
-<button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
-  Contact
-</button>
+              <button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
+                About
+              </button>
+              <button onClick={() => handleNavigationToSection('footer')} className="text-gray-700 hover:text-blue-600 font-medium cursor-pointer">
+                Contact
+              </button>
             </>
           )}
         </div>
@@ -120,9 +121,14 @@ const handleNavigationToSection = (sectionId: string) => {
                 </div>            
               </div>
             ) : (
-              <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-sm">
-                Login
+              <>
+              <Link href="/sign-in" className="hover:text-blue-700 text-blue-500 font-bold py-2 px-4 rounded-md">
+                Sign-in
               </Link>
+              <Link href="/sign-up" className="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-sm">
+                Sign-up
+              </Link>
+              </>
             )}
 
             {/* Profile Dropdown Menu */}
@@ -203,9 +209,14 @@ const handleNavigationToSection = (sectionId: string) => {
                 Logout
               </button>
             ) : (
-              <Link href="/login" className="block text-center text-white bg-blue-500 hover:bg-blue-600 font-bold py-2 px-4 rounded-md shadow-sm" onClick={() => setIsMobileMenuOpen(false)}>
-                Login
+              <>
+              <Link href="/sign-in" className="block text-center hover:text-blue-700 text-blue-500 font-bold py-2 px-4 rounded-mdshadow-sm" onClick={() => setIsMobileMenuOpen(false)}>
+                Sign-in
               </Link>
+              <Link href="/sign-up" className="mt-4 block text-center text-white bg-blue-500 hover:bg-blue-600 font-bold py-2 px-4 rounded-md shadow-sm" onClick={() => setIsMobileMenuOpen(false)}>
+                Sign-up
+              </Link>
+              </>
             )}
           </div>
         </div>

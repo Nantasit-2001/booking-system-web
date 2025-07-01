@@ -1,12 +1,12 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-
+import { useClerk } from '@clerk/nextjs';
 const NavBarAdmin: React.FC = () => {
     const pathname = usePathname();
     const isRooms = pathname === "/admin/rooms";
     const isBooking = pathname === "/admin/booking";
-
+    const { signOut } = useClerk();
     return (
         <nav className="bg-white p-4 shadow-sm flex justify-between items-center px-8 md:px-20">
             <div className="flex items-center sm:space-x-2 md:space-x-20">
@@ -37,8 +37,9 @@ const NavBarAdmin: React.FC = () => {
             <div className="flex items-center space-x-2">
                 <div className="h-6 w-6 rounded-full bg-green-600"></div>
                 <span className="text-gray-700 font-semibold">Admin User</span>
-                <button className="ml-4 px-2 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-medium">
-                    Logout
+                <button onClick={() => signOut(() => { window.location.href = '/'; })} 
+                        className="ml-4 px-2 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-medium">
+                        Logout
                 </button>
             </div>
         </nav>
