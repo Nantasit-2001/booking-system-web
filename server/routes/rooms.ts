@@ -1,28 +1,56 @@
-// server/routes/rooms.ts
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
 
 export default async function roomsRoutes(fastify: FastifyInstance) {
   // GET /rooms
-  fastify.get('/', async () => {
-    return await prisma.nameRoom.findMany();
-  });
+fastify.get('/type', async () => {
+    // ดึงเฉพาะห้องที่ available และ type ไม่ซ้ำกัน
+    const rooms = await prisma.rooms.findMany({
+        where: { room_status: 'available' },
+        orderBy: { id: 'asc' },
+        distinct: ['room_type'],
+    });
+    return rooms;
+});
 
-  // POST /rooms
-  fastify.post('/', async (request, reply) => {
-    const body = request.body as any;
+fastify.post('/filter', async (request) => {
+    const { FilterRoom, check_in, check_out } = request.body as {
+        FilterRoom: { type?: string; price?: number; guests?: number };
+        check_in: string;
+        check_out: string;
+    };
 
-    const room = await prisma.nameRoom.create({
-      data: {
-        nameRoom: body.nameRoom,
-        typeRoom: body.typeRoom,
-        description: body.description,
-        price: body.price,
-        url_picture: body.url_picture,
-        statusRoom: body.statusRoom,
-      },
+    // 1. กรองห้องตาม FilterRoom
+    const filteredRooms = await prisma.rooms.findMany({
+        where: {
+            ...(FilterRoom.type && { room_type: FilterRoom.type }),
+            ...(FilterRoom.price && { price: { lte: FilterRoom.price } }),
+            ...(FilterRoom.guests && { guests: { gte: FilterRoom.guests } }),
+            room_status: 'available',
+        },
+        orderBy: { id: 'asc' },
     });
 
-    return reply.code(201).send(room);
-  });
+    // 2. หา id ห้องที่ถูกจอง (unavailable) ในช่วง check_in/check_out
+    const reservations = await prisma.reservation.findMany({
+        where: {
+            OR: [
+                {
+                    check_in: { lte: check_out },
+                    check_out: { gte: check_in },
+                },
+            ],
+        },
+        select: { room_id: true },
+    });
+    const unavailableIds = reservations.map(r => r.room_id);
+
+    // 3. แยกห้องที่ว่างและไม่ว่าง
+    const available = filteredRooms.filter(room => !unavailableIds.includes(room.id));
+    const unavailable = filteredRooms.filter(room => unavailableIds.includes(room.id));
+
+    return { available, unavailable };
+});
+
+
 }

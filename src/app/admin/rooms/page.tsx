@@ -2,6 +2,7 @@ import NavBarAdmin from "@/components/AdminPage/NavBarAdmin";
 import CardDetail from "@/components/card/CardDetailAdmin";
 import { CardMetric } from "@/types/types";
 import RoomTable from "@/components/AdminPage/RoomTable";
+
 const AdminRoom: React.FC = () => {
   const totalRooms = 48; // Example static value
   const totalBookings = 156; // Example static value
@@ -31,7 +32,7 @@ const AdminRoom: React.FC = () => {
     },
     {
       title: 'Revenue',
-      value: `$${revenue.toLocaleString()}`,
+      value: `฿${revenue.toLocaleString()}`,
       icon: "w",
       bgColor: 'bg-yellow-100',
       textColor: 'text-yellow-600',

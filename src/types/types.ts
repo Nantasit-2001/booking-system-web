@@ -41,10 +41,13 @@ export interface SearchAvailableRoomsProps {
 //No Use
 export interface RoomAdmin {
   id: string;
-  name: string;
-  type: string;
-  pricePerNight: number;
-  status: 'Available' | 'Unavailable';
+  room_name: string;
+  room_type: string;
+  price: number;
+  max_guests: number;
+  room_status: 'available' | 'unavailable' | 'under maintenance';
+  description: string;
+  url_picture: string[];
 }
 
 export interface BookingAdmin {

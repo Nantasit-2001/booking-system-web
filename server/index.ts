@@ -1,12 +1,15 @@
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import roomsRoutes from './routes/rooms';
-
+import adminRoomRoutes from './routes/admin/rooms';
 const fastify = Fastify({ logger: true });
 
-// Register routes
-fastify.register(roomsRoutes, { prefix: '/rooms' });
-
 const start = async () => {
+  await fastify.register(cors, {
+    origin: '*',
+  });
+  fastify.register(roomsRoutes, { prefix: '/rooms' });
+  fastify.register(adminRoomRoutes, { prefix: '/admin/rooms' });
   try {
     await fastify.listen({ port: 3001, host: '0.0.0.0' });
     console.log('Server running on http://localhost:3001');

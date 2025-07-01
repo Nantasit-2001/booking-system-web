@@ -7,56 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Room {
-  id        String   @id
-  name      String
-  price     Int
-  available Boolean  @default(true)
-  createdAt DateTime @default(now())
-}
-
-model blockbooking {
-  id        Int       @id @default(autoincrement())
-  userid    Int
-  roomid    Int
-  checkin   DateTime  @db.Date
-  checkout  DateTime  @db.Date
-  createdat DateTime? @default(now()) @db.Timestamp(6)
-  room      room      @relation(fields: [roomid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model booking {
-  id            Int      @id @default(autoincrement())
-  userid        Int
-  nameroomid    Int
-  statusbooking String?  @default("pending") @db.VarChar(20)
-  checkin       DateTime @db.Date
-  checkout      DateTime @db.Date
-  totalprice    Decimal? @db.Decimal(10, 2)
-  paidamount    Decimal? @db.Decimal(10, 2)
-  note          String?
-  room          room     @relation(fields: [nameroomid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "booking_roomid_fkey")
-  users         users    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model room {
-  id           Int            @id(map: "nameroom_pkey") @default(autoincrement())
-  nameroom     String         @db.VarChar(100)
-  typeroom     String?        @db.VarChar(50)
-  description  String?
-  price        Decimal?       @db.Decimal(10, 2)
-  url_picture  String[]
-  statusroom   String?        @default("available") @db.VarChar(20)
-  blockbooking blockbooking[]
-  booking      booking[]
-}
-
 model users {
   id           Int            @id @default(autoincrement())
   name         String         @db.VarChar(100)
   email        String         @unique @db.VarChar(100)
   password     String         @db.VarChar(255)
-  blockbooking blockbooking[]
-  booking      booking[]
+  blocked_room blocked_room[]
+  reservation  reservation[]
+}
+
+model blocked_room {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  room_id    Int
+  check_in   DateTime  @db.Date
+  check_out  DateTime  @db.Date
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  rooms      rooms     @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_blocked_room_room")
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_blocked_room_user")
+}
+
+model reservation {
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  room_id            Int
+  status_reservation String?  @default("pending") @db.VarChar(20)
+  check_in           DateTime @db.Date
+  check_out          DateTime @db.Date
+  total_price        Decimal? @db.Decimal(10, 2)
+  paid_amount        Decimal? @db.Decimal(10, 2)
+  note               String?
+  rooms              rooms    @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reservation_room")
+  users              users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reservation_user")
+}
+
+model rooms {
+  id           Int            @id @default(autoincrement())
+  room_name    String         @db.VarChar(100)
+  room_type    String?        @db.VarChar(50)
+  description  String?
+  price        Decimal?       @db.Decimal(10, 2)
+  url_picture  String[]
+  room_status  String?        @default("available") @db.VarChar(20)
+  max_guests   Int?
+  blocked_room blocked_room[]
+  reservation  reservation[]
 }

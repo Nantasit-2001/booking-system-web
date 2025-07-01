@@ -9,82 +9,94 @@ interface RoomTableProps {
     onAddNewRoom: () => void;
 }
 
-const mockRooms: RoomAdmin[] = [
-    {
-        id: '1',
-        name: 'Deluxe Room',
-        type: 'Deluxe',
-        pricePerNight: 120,
-        status: 'Available',
-    },
-    {
-        id: '2',
-        name: 'Standard Room',
-        type: 'Standard',
-        pricePerNight: 80,
-        status: 'Unavailable',
-    },
-    {
-        id: '3',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },{
-        id: '4',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },{
-        id: '5',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },{
-        id: '6',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },{
-        id: '7',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },{
-        id: '8',
-        name: 'Suite',
-        type: 'Suite',
-        pricePerNight: 200,
-        status: 'Available',
-    },
-];
+// const mockRooms: RoomAdmin[] = [
+//     {
+//         id: '1',
+//         name: 'Deluxe Room',
+//         type: 'Deluxe',
+//         pricePerNight: 120,
+//         status: 'Available',
+//     },
+//     {
+//         id: '2',
+//         name: 'Standard Room',
+//         type: 'Standard',
+//         pricePerNight: 80,
+//         status: 'Unavailable',
+//     },
+//     {
+//         id: '3',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },{
+//         id: '4',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },{
+//         id: '5',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },{
+//         id: '6',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },{
+//         id: '7',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },{
+//         id: '8',
+//         name: 'Suite',
+//         type: 'Suite',
+//         pricePerNight: 200,
+//         status: 'Available',
+//     },
+// ];
 
 const RoomTable: React.FC = () => {
     const [rooms, setRooms] = useState<RoomAdmin[]>([]);
- const handleEditRoom = (id: string) => {
-    console.log('Edit room:', id);
-    // Implement logic for editing a room (e.g., open a modal, navigate to edit page)
-  };
+
+    useEffect(() => {
+    const fetchRooms = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/admin/rooms', {
+                method: 'GET',
+            });
+            const data = await response.json();
+            console.log('Fetched data:', data);
+            setRooms(data); // Combine fetched data with mock data for demonstration
+            console.log('Fetched rooms:', data);
+        } catch (error) {
+            console.error('Failed to fetch rooms:', error);
+        }
+    };
+    fetchRooms();
+    }, []);
+    // useEffect(() => {
+    //     // Mock fetch
+    //     const fetchRooms = async () => {
+    //         // Simulate network delay
+    //         await new Promise((resolve) => setTimeout(resolve, 500));
+    //         setRooms(mockRooms);
+    //     };
+    //     fetchRooms();
+    // }, []);
 
   const handleDeleteRoom = (id: string) => {
     console.log('Delete room:', id);
     // Implement logic for deleting a room (e.g., show confirmation, call API)
     setRooms(rooms.filter(room => room.id !== id)); // Example: optimistically remove from UI
   };
-
-    useEffect(() => {
-        // Mock fetch
-        const fetchRooms = async () => {
-            // Simulate network delay
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            setRooms(mockRooms);
-        };
-        fetchRooms();
-    }, []);
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -123,26 +135,26 @@ const RoomTable: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {rooms.map((room) => (
+                        {rooms.sort((a,b)=>b.price - a.price).map((room) => (
                             <tr key={room.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {room.name}
+                                    {room.room_name}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {room.type}
+                                    {room.room_type}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    ${room.pricePerNight.toFixed(2)}
+                                    ฿{Number(room.price).toFixed(2).toLocaleString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <span
                                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            room.status === 'Available'
+                                            room.room_status === 'available'
                                                 ? 'bg-green-100 text-green-800'
                                                 : 'bg-red-100 text-red-800'
                                         }`}
                                     >
-                                        {room.status}
+                                        {room.room_status}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-2">
