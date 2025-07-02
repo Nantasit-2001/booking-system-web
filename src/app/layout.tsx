@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <ClerkProvider
           signInUrl="/sign-in"
-      signUpUrl="/sign-up">
+          signUpUrl="/sign-up">
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

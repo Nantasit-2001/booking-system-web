@@ -36,7 +36,7 @@ const TopContent: React.FC = () => {
             Book premium hotel rooms with ease. Our smart chatbot helps you 24/7.
           </p>
           <div className="flex justify-center md:justify-start space-x-4">
-            <Link href="/rooms" className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-md shadow-lg transition-colors duration-200">
+            <Link href="/rooms" className="bg-[#f59e0b] hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-md shadow-lg transition-colors duration-200">
               Search Rooms
             </Link>
             <button onClick={() => scrollToSection('why-choose')} className="bg-transparent border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold py-3 px-6 rounded-md transition-colors duration-200 cursor-pointer">

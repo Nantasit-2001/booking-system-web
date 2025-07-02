@@ -69,7 +69,8 @@ const RoomTable: React.FC = () => {
     useEffect(() => {
     const fetchRooms = async () => {
         try {
-            const response = await fetch('http://localhost:3001/admin/rooms', {
+            // const response = await fetch('http://localhost:3001/admin/rooms', {
+            const response = await fetch('https://booking-system-api-7yrd.onrender.com/admin/rooms', {
                 method: 'GET',
             });
             const data = await response.json();

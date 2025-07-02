@@ -1,27 +1,25 @@
 // components/Navbar.tsx
 'use client';
 import Link from 'next/link';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import { scrollToSection } from '@/utils/scroll'; // นำเข้า function scrollToSection
 import { usePathname, useRouter } from 'next/navigation';
-import { useClerk } from '@clerk/nextjs';
-// สมมติว่ามีข้อมูลผู้ใช้ที่ Login แล้ว
-// คุณสามารถแทนที่ด้วย Context API, Redux, Zustand หรือการเรียก API จริงๆ
-const isAuthenticated = false; // ตั้งค่าเป็น true เพื่อทดสอบว่า Login แล้ว
-const user = {
-  name: 'Sarah Johnson',
-  // profilePicture: '/images/sarah_johnson.jpg', // ไม่มีรูปภาพแล้ว
-};
+import { useClerk,useUser } from '@clerk/nextjs';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const isAuthenticated = useUser().isSignedIn;
+  const userInfo = useUser().user?.username;
   const profileRef = useRef<HTMLDivElement>(null); // Ref สำหรับ Dropdown
   const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref สำหรับ Mobile Menu
   const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useClerk();
-  // Hook สำหรับปิด Dropdown เมื่อคลิกนอกพื้นที่
+  const { isSignedIn, user } = useUser();
+  console.log('isSignedIn:', isSignedIn);
+  console.log('user:', user);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // ปิด Profile Dropdown
@@ -117,7 +115,7 @@ const handleNavigationToSection = (sectionId: string) => {
                 {/* จุดสีเขียว */}
                 <div className='flex flex-row items-center justify-center gap-1'>
                     <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-800 font-medium">{user.name}</span>
+                    <span className="text-gray-800 font-medium">{userInfo}</span>
                 </div>            
               </div>
             ) : (
@@ -173,7 +171,7 @@ const handleNavigationToSection = (sectionId: string) => {
           {isAuthenticated && (
             // แสดงจุดสีเขียวและชื่อด้านบนสุดเมื่อ Login แล้วใน Mobile Menu
             <div className="flex flex-col items-center py-4 border-b border-gray-200 mb-4">
-              <span className="text-lg font-semibold text-gray-800">{user.name}</span>
+              <span className="text-lg font-semibold text-gray-800">{userInfo}</span>
             </div>
           )}
 
