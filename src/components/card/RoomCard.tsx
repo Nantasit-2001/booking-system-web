@@ -11,8 +11,8 @@ const HotelRoomCard: React.FC<HotelRoomCardProps> = ({
   isAvailable,
 }) => {
   return (
-    <div className=" h-[460px] rounded-xl overflow-hidden shadow-lg bg-white transform transition duration-300 hover:scale-105 flex flex-col">
-  <div className="relative w-full h-48">
+    <div className=" h-[460px] lg:w-[305px] xl:w-[400px] rounded-xl overflow-hidden shadow-lg bg-white transform transition duration-300 hover:scale-105 flex flex-col">
+  <div className="relative w-full h-60">
     <Image
       className="object-cover"
       src={imageUrl}

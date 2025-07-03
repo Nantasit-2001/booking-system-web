@@ -27,15 +27,9 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
       }
 
       const data = await res.json();
-            console.log("---------------------------------------------------------")
-      console.log(data)
-      console.log(data.role)
-      console.log(data.role !== 'admin')
       if (data.role !== 'admin') {
-        console.log("a")
         router.push('/');
       } else {
-        console.log("b")
         setLoading(false);
       }
     }

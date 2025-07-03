@@ -17,9 +17,6 @@ const Navbar = () => {
   const router = useRouter();
   const { signOut } = useClerk();
   const { isSignedIn, user } = useUser();
-  console.log('isSignedIn:', isSignedIn);
-  console.log('user:', user);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // ปิด Profile Dropdown

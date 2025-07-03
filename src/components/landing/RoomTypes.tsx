@@ -1,14 +1,23 @@
 'use client'; // เนื่องจากมีการใช้ useState และ input events
 import HotelRoomCard from "../card/RoomCard";
 import { scrollToSection } from "@/utils/scroll";
+import { useEffect, useState } from "react";
+import { fetchRoomTypes } from "@/services/room";
+
 const RoomTypes: React.FC = () => {
-     const roomData = {
-    imageUrl: '/images/deluxe-king-room.jpg', // ต้องมีภาพนี้อยู่ในโฟลเดอร์ public
-    roomName: 'Deluxe King Room',
-    pricePerNight: 149,
-    description: 'Spacious room with king bed, city view, and modern amenities. Perfect for business or leisure travel.',
-    isAvailable: true,
-  };
+    const [roomData, setRoomData] = useState<any>([]);
+    
+    useEffect(() => {
+      const fetchRoomTypeData = async () => {
+        try {
+          const data = await fetchRoomTypes();
+            setRoomData(data.sort((a, b)   => Number(b.price ?? 0) - Number(a.price ?? 0)));
+        } catch (error) {
+          console.error('Failed to fetch room type:', error);
+        }
+      };
+      fetchRoomTypeData();
+    }, []);
     return (
        <section>
        <section className="mx-auto px-4 pt-18 pb-20 w-full flex flex-col items-center justify-center">
@@ -19,10 +28,17 @@ const RoomTypes: React.FC = () => {
             </p>
         </div>
         <div className="flex flex-col gap-6 px-6 lg:px-18 md:gap-10 lg:flex-row lg:gap-10">
-          <HotelRoomCard {...roomData} />
-          <HotelRoomCard {...roomData} />
-          <HotelRoomCard {...roomData} />
-        </div>
+        {roomData.map((data: any, idx: number) => (
+          <HotelRoomCard
+            key={idx}
+            imageUrl={data.url_picture[0]} // หรือ data.imageUrl ถ้าชื่อ field เป็นแบบนั้น
+            roomName={data.room_name}
+            pricePerNight={data.price}
+            description={data.description}
+            isAvailable={data.is_available}
+          />
+        ))}
+          </div>
       </section>
 
       <div className="flex flex-col items-center bg-gradient-to-r from-blue-500 to-blue-800 w-full text-white py-20">
