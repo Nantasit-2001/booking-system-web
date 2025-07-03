@@ -3,52 +3,53 @@ import SearchAvailableRooms from "@/components/SearchAvailableRooms";
 import { useState, useRef } from "react"; // Import useRef
 import { X } from "@deemlol/next-icons";
 import Dropdown, { DropdownRef } from "@/components/Dropdown"; // Import DropdownRef
+import { SearchRoomProps } from "@/types/types";
+import { RoomTypeOption } from "@/types/types";
+import { PriceOption } from "@/types/types";
 
-type RoomTypeOption = 'All Room Types' | 'Single' | 'Double' | 'Suite';
-type PriceOption = 'Any Price' | 'Under $100' | '$100 - $200' | 'Over $200';
-type GuestsOption = 'Any Guests' | '1 Guest' | '2 Guests' | '3+ Guests';
-type SortOption = 'Sort by Price' | 'Sort by Rating' | 'Sort by Popularity';
 
-const SearchRoom: React.FC = () => {
-    const [checkInDate, setCheckInDate] = useState<string>('');
-    const [checkOutDate, setCheckOutDate] = useState<string>('');
-    const [numGuests, setNumGuests] = useState<number>(0);
-    const [hasSearched, setHasSearched] = useState<boolean>(false);
+const SearchRoom: React.FC<{
+    onFilterChange: SearchRoomProps['onFilterChange'];
+    roomsCount: number;
+}> = ({ onFilterChange, roomsCount }) => {
 
     // State for Filter Dropdowns
     const [selectedRoomType, setSelectedRoomType] = useState<RoomTypeOption>('All Room Types');
     const [selectedPrice, setSelectedPrice] = useState<PriceOption>('Any Price');
-    const [selectedGuests, setSelectedGuests] = useState<GuestsOption>('Any Guests');
-
-    // State for Sort Dropdown
-    const [selectedSortOption, setSelectedSortOption] = useState<SortOption>('Sort by Price');
 
     // Refs for Dropdown components for clearing
     const roomTypeDropdownRef = useRef<DropdownRef>(null);
     const priceDropdownRef = useRef<DropdownRef>(null);
-    const guestsDropdownRef = useRef<DropdownRef>(null);
-    const sortDropdownRef = useRef<DropdownRef>(null);
 
     // Available options for dropdowns
-    const roomTypeOptions: RoomTypeOption[] = ['All Room Types', 'Single', 'Double', 'Suite'];
-    const priceOptions: PriceOption[] = ['Any Price', 'Under $100', '$100 - $200', 'Over $200'];
-    const guestsOptions: GuestsOption[] = ['Any Guests', '1 Guest', '2 Guests', '3+ Guests'];
-    const sortOptions: SortOption[] = ['Sort by Price', 'Sort by Rating', 'Sort by Popularity'];
-
+    const roomTypeOptions: RoomTypeOption[] = ['All Room Types' , 'Suite' , 'Deluxe' , 'Standard'];
+    const priceOptions: PriceOption[] = ['Any Price', 'Under ฿1500', '฿1500 - ฿3000', 'Over ฿3000'];
     const handleSearchResults = (checkIn: string, checkOut: string, guests: number) => {
-        setCheckInDate(checkIn);
-        setCheckOutDate(checkOut);
-        setNumGuests(guests);
-        setHasSearched(true);
-        console.log('Search results received in TopContent:', { checkIn, checkOut, guests });
+        if (onFilterChange) {
+            onFilterChange({
+                roomType: selectedRoomType,
+                price: selectedPrice,
+                checkIn,
+                checkOut,
+                guests,
+            });
+        }
     };
 
     const handleClearAllFilters = () => {
         roomTypeDropdownRef.current?.clearSelection();
         priceDropdownRef.current?.clearSelection();
-        guestsDropdownRef.current?.clearSelection();
-        sortDropdownRef.current?.clearSelection(); // Clear sort as well if desired
-        console.log("All filters cleared!");
+        setSelectedRoomType('All Room Types');
+        setSelectedPrice('Any Price');
+    };
+
+    // Call onFilterChange when filters change
+    const handleRoomTypeChange = (value: string) => {
+        setSelectedRoomType(value as RoomTypeOption);
+    };
+
+    const handlePriceChange = (value: string) => {
+        setSelectedPrice(value as PriceOption);
     };
 
     return (
@@ -71,10 +72,7 @@ const SearchRoom: React.FC = () => {
                         label="Room Type"
                         options={roomTypeOptions}
                         selectedValue={selectedRoomType}
-                        onSelect={(value) => {
-                            setSelectedRoomType(value as RoomTypeOption);
-                            console.log('Selected Room Type:', value);
-                        }}
+                        onSelect={handleRoomTypeChange}
                     />
                     {/* Price Dropdown */}
                     <Dropdown
@@ -82,10 +80,7 @@ const SearchRoom: React.FC = () => {
                         label="Price"
                         options={priceOptions}
                         selectedValue={selectedPrice}
-                        onSelect={(value) => {
-                            setSelectedPrice(value as PriceOption);
-                            console.log('Selected Price:', value);
-                        }}
+                        onSelect={handlePriceChange}
                     />
                     {/* Guests Dropdown */}
                     <button
@@ -96,11 +91,11 @@ const SearchRoom: React.FC = () => {
                     </button>
                     {/* Sort Dropdown */}
                     <div className=" lg:hidden flex items-center gap-2 font-semibold text-lg sm:ml-3 sm:w-[440px]">
-                      <h3>{24} rooms found</h3> {/* This should be dynamic based on actual search results */}
+                      <h3>{roomsCount} rooms found</h3>
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-2 font-semibold text-lg">
-                        <h3>{24} rooms found</h3> {/* This should be dynamic based on actual search results */}
+                        <h3>{roomsCount} rooms found</h3>
                 </div>
             </div>
             

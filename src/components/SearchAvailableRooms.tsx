@@ -1,23 +1,19 @@
 // components/SearchAvailableRooms.tsx
-'use client'; // เนื่องจากมีการใช้ useState และ input events
+'use client';
 
-import React, { useState } from 'react';
-import { SearchAvailableRoomsProps } from '@/types/types'; // นำเข้า type สำหรับ props
+import React from 'react';
+import { SearchAvailableRoomsProps } from '@/types/types';
+import { useRoomSearch } from '@/Context/context';
 
-
-const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch }) => {
-  const [checkIn, setCheckIn] = useState<string>('');
-  const [checkOut, setCheckOut] = useState<string>('');
-  const [guests, setGuests] = useState<number>(1);
+const SearchAvailableRooms: React.FC<{ onSearch: SearchAvailableRoomsProps['onSearch'] }> = ({ onSearch }) => {
+  const { checkIn, setCheckIn, checkOut, setCheckOut, guests, setGuests } = useRoomSearch();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // ตรวจสอบข้อมูลเบื้องต้น
-    if (!checkIn || !checkOut || guests < 1) {
+    if (!checkIn || !checkOut ) {
       alert('Please fill in all search fields.');
       return;
     }
-    // ส่งข้อมูลออกไปผ่าน Prop onSearch
     onSearch(checkIn, checkOut, guests);
   };
 
@@ -66,19 +62,19 @@ const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch })
             value={guests}
             onChange={(e) => setGuests(parseInt(e.target.value))}
           >
-            {[...Array(10)].map((_, i) => ( // ตัวเลือก 1 ถึง 10 คน
-              <option key={i + 1} value={i + 1}>
-                {i + 1} Guest{i + 1 > 1 ? 's' : ''}
+            {[0,2, 4, 6].map((num) => (
+              <option key={num} value={num}>
+              {num===0?"-":num} Guests
               </option>
             ))}
           </select>
         </div>
 
         {/* Search Button */}
-        <div className="md:col-span-1 flex items-end"> {/* Use flex items-end to align button */}
+        <div className="md:col-span-1 flex items-end">
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-md shadow-sm flex items-center justify-center space-x-2 "
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-md shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -90,5 +86,6 @@ const SearchAvailableRooms: React.FC<SearchAvailableRoomsProps> = ({ onSearch })
     </div>
   );
 };
+
 
 export default SearchAvailableRooms;

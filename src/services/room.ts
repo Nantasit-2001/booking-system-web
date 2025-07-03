@@ -1,3 +1,5 @@
+import { Room } from "@/types/types";
+
 export interface RoomType {
     id: number;
     name: string;
@@ -25,4 +27,16 @@ export async function fetchRoomShow(): Promise<string[]> {
     } catch (error) {
         throw new Error('Failed to parse JSON response');
     }
+}
+
+export async function fetchRoomsAvailable(check_in: string, check_out: string): Promise<Room[]> {
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}/rooms/available`);
+    url.searchParams.append('check_in', check_in);
+    url.searchParams.append('check_out', check_out);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
 }

@@ -7,7 +7,7 @@ import Link from 'next/link'; // ใช้สำหรับสร้างล�
 import { scrollToSection } from '@/utils/scroll';
 import CardImage from '../card/CardImage';
 import { fetchRoomShow } from '@/services/room';
-
+import { useRouter } from 'next/navigation';
 const TopContent: React.FC = () => {
   // State สำหรับเก็บข้อมูลการค้นหาที่ได้รับจาก SearchAvailableRooms
   const [checkInDate, setCheckInDate] = useState<string>('');
@@ -16,7 +16,7 @@ const TopContent: React.FC = () => {
   const [hasSearched, setHasSearched] = useState<boolean>(false); // เพิ่ม state เพื่อบอกว่ามีการค้นหาหรือยัง
   const [roomShow,setRoomShow]=useState<any>('');
   // ฟังก์ชันที่จะถูกเรียกเมื่อ SearchAvailableRooms ส่งข้อมูลกลับมา
-
+  const router = useRouter()
   useEffect(() => {
       const fetchData = async () => {
       try {
@@ -37,12 +37,8 @@ const TopContent: React.FC = () => {
     setCheckOutDate(checkOut);
     setNumGuests(guests);
     setHasSearched(true); // ตั้งค่าว่ามีการค้นหาแล้ว
-    console.log('Search results received in TopContent:', { checkIn, checkOut, guests });
+    router.push("/rooms")
 
-    // Fetch room data when the component mounts
-    // ในอนาคต คุณสามารถส่งค่าเหล่านี้ไปยัง Dynamic Route ได้ที่นี่
-    // ตัวอย่าง: router.push(`/rooms/search?checkin=${checkIn}&checkout=${checkOut}&guests=${guests}`);
-    // ต้อง import { useRouter } from 'next/navigation'; ด้วยถ้าจะใช้
   };
 
   return (

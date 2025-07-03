@@ -4,7 +4,7 @@ export interface Room {
   name: string;
   description: string;
   pricePerNight: number;
-  imageUrl: string;
+  imageUrl: string[];
 }
 
 // สำหรับ Feature Card
@@ -36,6 +36,18 @@ export interface HotelRoomCardProps {
 // กำหนด Type สำหรับ Props ที่จะรับเข้ามา
 export interface SearchAvailableRoomsProps {
   onSearch: (checkIn: string, checkOut: string, guests: number) => void;
+}
+export type RoomTypeOption = 'All Room Types' | 'Suite' | 'Deluxe' | 'Standard';
+export type PriceOption = 'Any Price' | 'Under ฿1500' | '฿1500 - ฿3000' | 'Over ฿3000';
+export interface SearchRoomProps {
+    onFilterChange?: (filters: {
+        roomType: RoomTypeOption;
+        price: PriceOption;
+        checkIn: string;
+        checkOut: string;
+        guests: number;
+        // Add more filter fields if needed
+    }) => void;
 }
 
 //No Use
@@ -74,11 +86,11 @@ export interface CardMetric {
 // types/types.ts (if you have one, add this interface)
 export interface RoomDetail {
     id: string;
-    name: string;
-    roomType: string;
-    pricePerNight: number;
-    maxGuests: number;
-    status: 'Available' | 'Unavailable' | 'Under Maintenance';
+    room_name: string;
+    room_type: string;
+    price: number;
+    max_guests: number;
+    room_status: 'available' | 'unavailable' ;
     description: string;
-    images: string[];
+    url_picture: string[];
 }
