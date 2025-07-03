@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import AdminGuard from '@/components/auth/AdminGuard';
 import { useRouter, useParams } from 'next/navigation'; // For App Router
 // If using Pages Router, it would be: import { useRouter } from 'next/router';
 
@@ -128,6 +129,7 @@ const RoomManagementPage: React.FC = () => {
     }
 
     return (
+        <AdminGuard>
         <div className="min-h-screen bg-gray-100 p-6">
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 pb-3 mb-8">
                 {/* Header Section */}
@@ -287,6 +289,7 @@ const RoomManagementPage: React.FC = () => {
                 </div>
             </div>
         </div>
+    </AdminGuard>
     );
 };
 

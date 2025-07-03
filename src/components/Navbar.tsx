@@ -1,7 +1,7 @@
 // components/Navbar.tsx
 'use client';
 import Link from 'next/link';
-import { useState, useRef, useEffect, use } from 'react';
+import { useState, useRef, useEffect,} from 'react';
 import { scrollToSection } from '@/utils/scroll'; // นำเข้า function scrollToSection
 import { usePathname, useRouter } from 'next/navigation';
 import { useClerk,useUser } from '@clerk/nextjs';

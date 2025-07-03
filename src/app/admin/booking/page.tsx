@@ -3,6 +3,7 @@ import NavBarAdmin from "@/components/AdminPage/NavBarAdmin";
 import CardDetail from "@/components/card/CardDetailAdmin";
 import { CardMetric } from "@/types/types";
 import BookingTable from "@/components/AdminPage/BookingTable";
+import AdminGuard from "@/components/auth/AdminGuard";
 const AdminBooking: React.FC = () => {
  const totalBookings = 48; // Example static value
   const confirmed = 156; // Example static value
@@ -47,6 +48,7 @@ const AdminBooking: React.FC = () => {
   ];
     return (
     <>
+    <AdminGuard>
       <NavBarAdmin />
       <section className=" px-8 min-h-screen bg-gray-100 flex flex-col items-center">
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-5 lg:gap-12 w-full max-w-7xl pt-10">
@@ -58,6 +60,7 @@ const AdminBooking: React.FC = () => {
         <BookingTable />
         </div>
       </section>
+    </AdminGuard>
     </>
   );
 };
