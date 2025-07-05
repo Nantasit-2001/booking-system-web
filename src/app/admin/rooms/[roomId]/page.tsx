@@ -3,28 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import AdminGuard from '@/components/auth/AdminGuard';
 import { useRouter, useParams } from 'next/navigation'; // For App Router
-// If using Pages Router, it would be: import { useRouter } from 'next/router';
-
 import Dropdown from '@/components/Dropdown'; // Adjust path as necessary
 import RoomStatusRadio from '@/components/AdminPage/RoomStatusRadio';
 import ImageUploadDisplay from '@/components/AdminPage/ImageUploadDisplay'; // Adjust path as necessary
-import { RoomDetail } from '@/types/types'; // Adjust path as necessary
-
-// Mock data for a room (to simulate data fetched in Edit mode)
-const mockRoomData: RoomDetail = {
-    id: "RM001",
-    name: "Ocean View Suite",
-    roomType: "Suite",
-    pricePerNight: 350,
-    maxGuests: 4,
-    status: 'Available',
-    description: "Spacious suite with breathtaking ocean views, featuring a king-size bed, separate living area, marble bathroom, and private balcony. Perfect for romantic getaways or business travelers seeking luxury.",
-    images: [
-        "https://via.placeholder.com/150/FF5733/FFFFFF?text=Room+Img+1",
-        "https://via.placeholder.com/150/3366FF/FFFFFF?text=Room+Img+2",
-        "https://via.placeholder.com/150/33FF57/FFFFFF?text=Room+Img+3"
-    ]
-};
+import { RoomDetailAdmin } from '@/types/types'; // Adjust path as necessary
+import { CreateRoom,getRoomById,updateRoom } from '@/services/room';
+import { uploadImagesToCloudinary } from '@/lib/uploadImagesToCloudinary';
+import ImageDisplayGrid from '@/components/AdminPage/ImageDisplayGrid';
 
 // Mock list of room types for the Dropdown
 const mockRoomTypes = ['Standard', 'Deluxe', 'Suite', 'Executive'];
@@ -35,42 +20,41 @@ const RoomManagementPage: React.FC = () => {
     const roomId = params.roomId as string | undefined; // 'undefined' for create mode
 
     const [isEditMode, setIsEditMode] = useState(false);
-    const [roomData, setRoomData] = useState<RoomDetail>({
-        id: '',
-        name: '',
-        roomType: '',
-        pricePerNight: 0,
-        maxGuests: 0,
-        status: 'Available', // Default status for new rooms
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [roomData, setRoomData] = useState<RoomDetailAdmin>({
+        id:'',
+        room_name: '',
+        room_type: '',
+        price: 0,
+        max_guests: 0,
+        room_status: 'available', // Default status for new rooms
         description: '',
-        images: []
+        url_picture: []
     });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (roomId && roomId !== 'create') { // Check if roomId exists and is not 'create'
-            setIsEditMode(true);
-            // Simulate fetching room data for editing
             const fetchRoomData = async () => {
-                setIsLoading(true);
-                await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call delay
-                setRoomData(mockRoomData); // Set mock data for demonstration
-                setIsLoading(false);
+                const data = await getRoomById(roomId);
+                setRoomData(data);
+                setIsEditMode(true);
+                setIsLoading(false);    
             };
             fetchRoomData();
         } else {
             setIsEditMode(false);
             // For 'create' mode, ensure roomData is reset to initial empty state
             setRoomData({
-                id: '',
-                name: '',
-                roomType: '',
-                pricePerNight: 0,
-                maxGuests: 0,
-                status: 'Available',
-                description: '',
-                images: []
-            });
+               id: '',
+        room_name: '',
+        room_type: '',
+        price: 0,
+        max_guests: 0,
+        room_status: 'available', // Default status for new rooms
+        description: '',
+        url_picture: []
+    });
             setIsLoading(false);
         }
     }, [roomId]);
@@ -82,44 +66,68 @@ const RoomManagementPage: React.FC = () => {
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseFloat(e.target.value);
-        setRoomData(prev => ({ ...prev, pricePerNight: isNaN(value) ? 0 : value }));
+        setRoomData(prev => ({ ...prev, price: isNaN(value) ? 0 : value }));
     };
 
     const handleGuestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value);
-        setRoomData(prev => ({ ...prev, maxGuests: isNaN(value) ? 0 : value }));
+        setRoomData(prev => ({ ...prev, max_guests: isNaN(value) ? 0 : value }));
     };
 
     const handleRoomTypeSelect = (type: string) => {
-        setRoomData(prev => ({ ...prev, roomType: type }));
+        setRoomData(prev => ({ ...prev, room_type: type }));
     };
 
-    const handleStatusChange = (newStatus: 'Available' | 'Unavailable' | 'Under Maintenance') => {
-        setRoomData(prev => ({ ...prev, status: newStatus }));
+    const handleStatusChange = (newStatus: 'available' | 'unavailable' | 'under Maintenance') => {
+        setRoomData(prev => ({ ...prev, room_status: newStatus }));
     };
 
-    const handleImagesChange = (newImages: string[]) => {
-        setRoomData(prev => ({ ...prev, images: newImages }));
-    };
+    const handleSaveChanges = async () => {
+        try {
+            setIsLoading(true);
 
-    const handleSaveChanges = () => {
-        console.log("Saving changes...", roomData);
-        // This is where you would send roomData to your backend API
-        // Example: axios.post('/api/rooms', roomData) or axios.put(`/api/rooms/${roomData.id}`, roomData)
-        alert(`Changes saved for room: ${roomData.name || 'New Room'}`);
-        // Optionally redirect back to room list or show success message
-    };
+            if (!roomData.room_name.trim()) return alert("Please enter the Room Name.");
+            if (!roomData.room_type.trim()) return alert("Please select the Room Type.");
+            if (!roomData.description.trim()) return alert("Please enter the Room Description.");
+            if (roomData.price <= 0) return alert("Price must be greater than 0.");
+            if (roomData.max_guests <= 0) return alert("Max Guests must be greater than 0.");
+
+            if (isEditMode && roomId) {
+                await updateRoom(roomId, roomData);
+            } else {
+                const imageUrls = await uploadImagesToCloudinary(selectedImages);
+                const payload: RoomDetailAdmin = { ...roomData, url_picture: imageUrls };
+                await CreateRoom(payload);
+            }
+
+            router.push("/admin/rooms");
+        } catch (error: unknown) {
+            if (
+                typeof error === 'object' &&
+                error !== null &&
+                'status' in error &&
+                'message' in error
+            ) {
+            const err = error as { status?: number; message?: string };
+            if (err.status === 409 && err.message === 'DUPLICATE_ROOM_NAME') {
+                    alert('Room Name already exists. Please choose another name.');
+                    return;
+                }
+            }
+            alert('An error occurred while saving the room.');
+        }finally{setIsLoading(false);}
+};
 
     const handleCancel = () => {
         router.back(); // Go back to the previous page
     };
 
     const handleDeleteRoom = () => {
-        if (window.confirm(`Are you sure you want to delete "${roomData.name}"?`)) {
+        if (window.confirm(`Are you sure you want to delete "${roomData.room_name}"?`)) {
             console.log("Deleting room:", roomData.id);
             // Call API to delete room
             // Example: axios.delete(`/api/rooms/${roomData.id}`)
-            alert(`Room "${roomData.name}" deleted.`);
+            alert(`Room "${roomData.room_name}" deleted.`);
             router.push('/rooms'); // Redirect to room list after deletion
         }
     };
@@ -130,29 +138,31 @@ const RoomManagementPage: React.FC = () => {
 
     return (
         <AdminGuard>
+        {isLoading?<h2 className='flex justify-center items-center h-screen text-4xl font-extrabold text-blue-800'>Loading...</h2>
+        :
         <div className="min-h-screen bg-gray-100 p-6">
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 pb-3 mb-8">
                 {/* Header Section */}
                 <div className="flex justify-between items-center pb-4">
                     <div>
                         <h1 className="text-2xl font-semibold text-gray-800">
-                            {isEditMode ? roomData.name || 'Edit Room' : 'Add New Room'}
+                            {isEditMode ? roomData.room_name || 'Edit Room' : 'Add New Room'}
                         </h1>
                         {isEditMode && roomData.id && (
                             <p className="text-gray-500 text-sm">Room ID: #{roomData.id}</p>
                         )}
                     </div>
-                    {isEditMode && roomData.status === 'Available' && (
+                    {isEditMode && roomData.room_status === 'available' && (
                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             Available
                         </span>
                     )}
-                     {isEditMode && roomData.status === 'Unavailable' && (
+                     {isEditMode && roomData.room_status === 'unavailable' && (
                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                             Unavailable
                         </span>
                     )}
-                     {isEditMode && roomData.status === 'Under Maintenance' && (
+                     {isEditMode && roomData.room_status === 'under Maintenance' && (
                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                             Under Maintenance
                         </span>
@@ -167,9 +177,9 @@ const RoomManagementPage: React.FC = () => {
                             <label htmlFor="roomName" className="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
                             <input
                                 type="text"
-                                name="name"
+                                name="room_name"
                                 id="roomName"
-                                value={roomData.name}
+                                value={roomData.room_name}
                                 onChange={handleInputChange}
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 placeholder="e.g., Ocean View Suite"
@@ -180,7 +190,7 @@ const RoomManagementPage: React.FC = () => {
                             <Dropdown
                                 label="Room Type"
                                 options={mockRoomTypes}
-                                selectedValue={roomData.roomType}
+                                selectedValue={roomData.room_type}
                                 onSelect={handleRoomTypeSelect}
                             />
                         </div>
@@ -194,11 +204,11 @@ const RoomManagementPage: React.FC = () => {
                                     type="number"
                                     name="pricePerNight"
                                     id="pricePerNight"
-                                    value={roomData.pricePerNight}
+                                    value={roomData.price}
                                     onChange={handlePriceChange}
                                     className="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     placeholder="0.00"
-                                    min="0"
+                                    min="1"
                                 />
                             </div>
                         </div>
@@ -208,7 +218,7 @@ const RoomManagementPage: React.FC = () => {
                                 type="number"
                                 name="maxGuests"
                                 id="maxGuests"
-                                value={roomData.maxGuests}
+                                value={roomData.max_guests}
                                 onChange={handleGuestsChange}
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 placeholder="1"
@@ -222,7 +232,7 @@ const RoomManagementPage: React.FC = () => {
                 <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Room Status</h3>
                     <RoomStatusRadio
-                        currentStatus={roomData.status}
+                        currentStatus={roomData.room_status ?? 'available'}
                         onStatusChange={handleStatusChange}
                     />
                 </div>
@@ -244,10 +254,11 @@ const RoomManagementPage: React.FC = () => {
                 {/* Room Images */}
                 <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Room Images</h3>
-                    <ImageUploadDisplay
-                        images={roomData.images}
-                        onImagesChange={handleImagesChange}
-                    />
+                    {isEditMode ? (
+                        <ImageDisplayGrid images={roomData.url_picture} />
+                        ) : (
+                        <ImageUploadDisplay images={selectedImages} onImagesChange={setSelectedImages} />
+                    )}
                 </div>
 
                 {/* Action Buttons */}
@@ -289,6 +300,7 @@ const RoomManagementPage: React.FC = () => {
                 </div>
             </div>
         </div>
+    }
     </AdminGuard>
     );
 };

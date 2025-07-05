@@ -52,13 +52,13 @@ const CardImage: React.FC<CardImageProps> = ({
                     }
                     return (
                         <div
-                            key={img}
+                            key={idx}
                             className={classNames}
                             data-carousel-item={idx === current ? "active" : undefined}
                         >
                             <img
                                 src={img}
-                                className="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                                className="rounded-2xl absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                                 alt=""
                             />
                         </div>

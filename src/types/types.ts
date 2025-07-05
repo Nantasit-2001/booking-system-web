@@ -50,18 +50,6 @@ export interface SearchRoomProps {
     }) => void;
 }
 
-//No Use
-export interface RoomAdmin {
-  id: string;
-  room_name: string;
-  room_type: string;
-  price: number;
-  max_guests: number;
-  room_status: 'available' | 'unavailable' | 'under maintenance';
-  description: string;
-  url_picture: string[];
-}
-
 export interface BookingAdmin {
   Booking_id: string;
   User: string;
@@ -94,3 +82,15 @@ export interface RoomDetail {
     description: string;
     url_picture: string[];
 }
+
+export interface RoomDetailAdmin {
+    id: string;
+    room_name: string;
+    room_type: string;
+    price: number;
+    max_guests: number;
+    room_status: 'available' | 'unavailable'| 'under Maintenance' ;
+    description: string;
+    url_picture: string[];
+}
+

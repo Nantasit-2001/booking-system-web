@@ -2,12 +2,12 @@
 import React from 'react';
 
 interface RoomStatusRadioProps {
-    currentStatus: 'Available' | 'Unavailable' | 'Under Maintenance';
-    onStatusChange: (status: 'Available' | 'Unavailable' | 'Under Maintenance') => void;
+    currentStatus: 'available' | 'unavailable' | 'under Maintenance';
+    onStatusChange: (status: 'available' | 'unavailable' | 'under Maintenance') => void;
 }
 
 const RoomStatusRadio: React.FC<RoomStatusRadioProps> = ({ currentStatus, onStatusChange }) => {
-    const statuses = ['Available', 'Unavailable', 'Under Maintenance'] as const;
+    const statuses = ['available', 'unavailable', 'under Maintenance'] as const;
 
     return (
         <div className="flex flex-col space-y-2">

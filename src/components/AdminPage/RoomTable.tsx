@@ -1,104 +1,43 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { RoomAdmin } from '@/types/types'; // Adjust the import path as necessary
+import { RoomDetailAdmin } from '@/types/types'; // Adjust the import path as necessary
 import Link from 'next/link';
-
+import { fetchRoom,deleteRoom } from "@/services/room";
 interface RoomTableProps {
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
     onAddNewRoom: () => void;
 }
 
-// const mockRooms: RoomAdmin[] = [
-//     {
-//         id: '1',
-//         name: 'Deluxe Room',
-//         type: 'Deluxe',
-//         pricePerNight: 120,
-//         status: 'Available',
-//     },
-//     {
-//         id: '2',
-//         name: 'Standard Room',
-//         type: 'Standard',
-//         pricePerNight: 80,
-//         status: 'Unavailable',
-//     },
-//     {
-//         id: '3',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },{
-//         id: '4',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },{
-//         id: '5',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },{
-//         id: '6',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },{
-//         id: '7',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },{
-//         id: '8',
-//         name: 'Suite',
-//         type: 'Suite',
-//         pricePerNight: 200,
-//         status: 'Available',
-//     },
-// ];
-
 const RoomTable: React.FC = () => {
-    const [rooms, setRooms] = useState<RoomAdmin[]>([]);
+    const [rooms, setRooms] = useState<RoomDetailAdmin[]>([]);
 
     useEffect(() => {
     const fetchRooms = async () => {
         try {
-            // const response = await fetch('http://localhost:3001/admin/rooms', {
-            const response = await fetch('https://booking-system-api-7yrd.onrender.com/admin/rooms', {
-                method: 'GET',
-            });
-            const data = await response.json();
-            console.log('Fetched data:', data);
-            setRooms(data); // Combine fetched data with mock data for demonstration
-            console.log('Fetched rooms:', data);
+            const data = await fetchRoom();
+            setRooms(data);
         } catch (error) {
             console.error('Failed to fetch rooms:', error);
         }
+        
     };
     fetchRooms();
     }, []);
-    // useEffect(() => {
-    //     // Mock fetch
-    //     const fetchRooms = async () => {
-    //         // Simulate network delay
-    //         await new Promise((resolve) => setTimeout(resolve, 500));
-    //         setRooms(mockRooms);
-    //     };
-    //     fetchRooms();
-    // }, []);
 
-  const handleDeleteRoom = (id: string) => {
-    console.log('Delete room:', id);
-    // Implement logic for deleting a room (e.g., show confirmation, call API)
-    setRooms(rooms.filter(room => room.id !== id)); // Example: optimistically remove from UI
-  };
+const handleDeleteRoom = async (id: string) => {
+  const confirmed = window.confirm("Are you sure you want to delete this room?");
+  if (!confirmed) return;
 
+  try {
+    await deleteRoom(id); // เรียก API
+    setRooms(prev => prev.filter(room => room.id !== id)); // อัปเดต state UI
+    alert("Room deleted successfully.");
+  } catch (error) {
+    alert("Failed to delete room.");
+    console.error(error);
+  }
+};
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">

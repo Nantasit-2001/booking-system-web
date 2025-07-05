@@ -7,6 +7,7 @@ import { SearchRoomProps } from "@/types/types";
 import { fetchRoomsAvailable } from "@/services/room";
 import { RoomDetail } from "@/types/types";
 import { useRoomSearch } from "@/Context/context";
+import { useRouter } from 'next/navigation'; // ✨ เพิ่ม
 
 const BookingPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDetail[]>([]);
@@ -15,6 +16,7 @@ const BookingPage: React.FC = () => {
   const [price, setPrice] = useState<string | number | null>(null);
   const [roomType, setRoomType] = useState<string>('');
   const [search,setSearch] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
   const fetchData = async () => {
@@ -71,12 +73,16 @@ const BookingPage: React.FC = () => {
     setSearch(true);
   };
 
-  
-  return (
+  const handleViewDetails = (id: string) => {
+    const room = rooms.find((room) => room.id === id);
+    if (!room) return;
+    router.push(`/rooms/${id}`);
+  }
+    return (
     <div>
       <Navbar />
       <SearchRoom onFilterChange={handleSearch} roomsCount={rooms.length} />
-      <div className=" bg-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-16 py-16 justify-center items-center place-items-center">
+      <div className=" bg-gray-100 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-16 py-16 justify-center items-center place-items-center">
       
       {loading ? (
             <div className="flex justify-center items-center col-span-full py-20">
@@ -92,11 +98,13 @@ const BookingPage: React.FC = () => {
           rooms.map((room, index) => (
             <HotelRoomCard
               key={index}
+              id={room.id} // ✅ ส่ง id ไป
               imageUrl={room.url_picture[0]}
               roomName={room.room_name}
               pricePerNight={Number(room.price)}
               description={room.description}
               isAvailable={room.room_status === "available"}
+              onViewDetails={handleViewDetails} // ✅ ส่ง function ไป
             />
           ))
         )}

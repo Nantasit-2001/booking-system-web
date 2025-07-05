@@ -8,6 +8,8 @@ const AdminRoom: React.FC = () => {
   const totalBookings = 156; // Example static value
   const occupancyRate = 78; // Example static value (as a percentage)
   const revenue = 24560; // Example static value
+
+
   const cardMetrics: CardMetric[] = [
     {
       title: 'Total Rooms',
