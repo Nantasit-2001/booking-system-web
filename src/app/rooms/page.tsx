@@ -7,7 +7,7 @@ import { SearchRoomProps } from "@/types/types";
 import { fetchRoomsAvailable } from "@/services/room";
 import { RoomDetail } from "@/types/types";
 import { useRoomSearch } from "@/Context/context";
-import { useRouter } from 'next/navigation'; // ✨ เพิ่ม
+import { useRouter } from 'next/navigation'; 
 
 const BookingPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDetail[]>([]);
@@ -56,7 +56,6 @@ const BookingPage: React.FC = () => {
       }
 
       setRooms(filteredRooms);
-      console.log(filteredRooms)
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
     } finally {

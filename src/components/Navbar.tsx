@@ -56,7 +56,7 @@ const handleNavigationToSection = (sectionId: string) => {
   };
 
   return (
-    <nav className="bg-gray-100 shadow-md relative z-20 py-2"> {/* Navbar จะอยู่ด้านบนสุด */}
+    <nav className="bg-gray-100 shadow-md relative z-2000 py-2"> {/* Navbar จะอยู่ด้านบนสุด */}
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo/Brand */}
         <Link href="/" className="flex items-center space-x-2 text-xl font-bold text-blue-600">
@@ -65,24 +65,10 @@ const handleNavigationToSection = (sectionId: string) => {
         </Link>
 
         {/* Hamburger Menu Button (สำหรับหน้าจอขนาดเล็ก) */}
-        <div className="md:hidden">
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="hamburger-button text-gray-700 focus:outline-none focus:text-blue-600 cursor-pointer"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-              )}
-            </svg>
-          </button>
-        </div>
-
+        
         {/* Desktop Navigation Links & Profile/Login */}
         {/* จะแสดงเฉพาะบนหน้าจอขนาดกลาง (md) ขึ้นไป */}
+        <div className='flex flex-row gap-4'>
         <div className="hidden md:flex items-center space-x-6">
           <Link href="/rooms" className="text-gray-700 hover:text-blue-600 font-medium">
             Rooms
@@ -109,7 +95,7 @@ const handleNavigationToSection = (sectionId: string) => {
             {isAuthenticated ? (
               <div className="flex items-center space-x-4 cursor-pointer" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
                 {/* จุดสีเขียว */}
-                <div className='flex flex-row items-center justify-center gap-1'>
+                <div className='flex flex-row items-center justify-center gap-1 pl-2'>
                     <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                     <span className="text-gray-800 font-medium">{userInfo}</span>
                 </div>            
@@ -143,7 +129,23 @@ const handleNavigationToSection = (sectionId: string) => {
           </div>
         </div>
       </div>
+      <div className="md:hidden">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="hamburger-button text-gray-700 focus:outline-none focus:text-blue-600 cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              )}
+            </svg>
+          </button>
+        </div>
 
+      </div>
       {/* Mobile Menu (Overlay with Animation) */}
       {/* จะแสดงเมื่อ isMobileMenuOpen เป็น true และบนหน้าจอขนาดเล็ก */}
       <div

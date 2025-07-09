@@ -6,7 +6,8 @@ import { fetchRoomById } from '@/services/room'; // Import your fetch function
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/footer/InlandingPage';
 import CardImage from '@/components/card/CardImage';
-
+import DatePickerPopup from '@/components/DatePickerPopup';
+import { BookingHandler } from '@/components/auth/BlockBooking';
 interface RoomData {
   id: string;
   room_name: string;
@@ -23,12 +24,18 @@ const RoomDetailsPage: React.FC = () => {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [checkIn, setCheckIn] = useState("");
+const [checkOut, setCheckOut] = useState("");
+const [bookingRequested, setBookingRequested] = useState(false);
+const [resultMessage, setResultMessage] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     const fetchAndSetRoomData = async () => {
       // Access the dynamic ID from the URL
       const id = window.location.pathname.split('/').pop();
-      console.log(id)
       if (!id) {
         setError("Room ID not found in URL.");
         setLoading(false);
@@ -76,16 +83,25 @@ const RoomDetailsPage: React.FC = () => {
     );
   }
 
-    const handleBooking = () => {
-      // เขียน insert Date in out แล้วค่อยกด Enter เพื่อเช็คแล้วส่งไป booking
-    console.log("--------------------")
-      router.push(`/booking/${roomData.id}`);
-  }
+const handleBooking = (checkInDate: string, checkOutDate: string) => {
+  setCheckIn(checkInDate);
+  setCheckOut(checkOutDate);
+  setBookingRequested(true); 
+  setResultMessage(null); // reset message
+};
+
 
   return (
     <div className="min-h-screen bg-gray-200 font-sans">
       <Navbar/>
-      
+
+      <DatePickerPopup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        onSubmit={handleBooking}
+        initialCheckIn=""
+        initialCheckOut=""
+      />
       <div className="max-w-6xl mx-auto p-6 rounded-lg py-8 pb-18">
         <div className="flex items-center text-blue-600 mb-6">
           <div onClick={() => router.back()} className='flex cursor-pointer'>
@@ -141,10 +157,21 @@ const RoomDetailsPage: React.FC = () => {
             </div>
 
             <button 
-              onClick={handleBooking}
+              onClick={() => setShowPopup(true)}
               className="cursor-pointer mt-4 w-full bg-blue-500 text-white py-3 rounded-md text-lg font-semibold hover:bg-blue-700 transition duration-300">
               Book This Room
             </button>
+            {bookingRequested && checkIn && checkOut && roomData?.id && (
+  <BookingHandler
+    roomId={parseInt(roomData.id)}
+    checkIn={checkIn}
+    checkOut={checkOut}
+    onResult={({ success, message }) => {
+      (success ? router.push(`/booking/${roomData.id}?checkIn=${checkIn}&checkOut=${checkOut}`) : setResultMessage(`❌ ${message}`));
+      setBookingRequested(false); // หยุด trigger
+    }}
+  />
+)} {resultMessage && <p className='text-center pt-2'>{resultMessage}</p>}
 
             <div className="text-center text-gray-500 mt-4 text-sm">
               Need help? <a href="#" className="text-blue-500 hover:underline">Contact us</a>

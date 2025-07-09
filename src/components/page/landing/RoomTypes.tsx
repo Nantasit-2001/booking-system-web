@@ -1,14 +1,29 @@
 'use client'; // เนื่องจากมีการใช้ useState และ input events
 import HotelRoomCard from "../../card/RoomCard";
-import { scrollToSection } from "../../../utils/scroll";
+import { scrollToSection } from "@/utils/scroll";
+import { useEffect, useState } from "react";
+import { fetchRoomTypes } from "@/services/room";
+import { useRouter } from 'next/navigation'
 const RoomTypes: React.FC = () => {
-     const roomData = {
-    imageUrl: '/images/deluxe-king-room.jpg', // ต้องมีภาพนี้อยู่ในโฟลเดอร์ public
-    roomName: 'Deluxe King Room',
-    pricePerNight: 149,
-    description: 'Spacious room with king bed, city view, and modern amenities. Perfect for business or leisure travel.',
-    isAvailable: true,
-  };
+    const [roomData, setRoomData] = useState<any>([]);
+    const router = useRouter()
+    useEffect(() => {
+      const fetchRoomTypeData = async () => {
+        try {
+          const data = await fetchRoomTypes();
+            setRoomData(data.sort((a, b)   => Number(b.price ?? 0) - Number(a.price ?? 0)));
+        } catch (error) {
+          console.error('Failed to fetch room type:', error);
+        }
+      };
+      fetchRoomTypeData();
+    }, []);
+
+    const handleViewDetails = (id: string) => {
+    const room = roomData.find((data:any) => data.id === id);
+    if (!room) return;
+    router.push(`/rooms/${id}`);
+  }
     return (
        <section>
        <section className="mx-auto px-4 pt-18 pb-20 w-full flex flex-col items-center justify-center">
@@ -18,11 +33,20 @@ const RoomTypes: React.FC = () => {
                 Choose from our variety of comfortable accommodations
             </p>
         </div>
-        <div className="flex flex-col gap-6 px-6 md:gap-10 lg:flex-row lg:gap-10">
-          <HotelRoomCard {...roomData} />
-          <HotelRoomCard {...roomData} />
-          <HotelRoomCard {...roomData} />
-        </div>
+        <div className="flex flex-col gap-6 px-6 xl:px-18 md:gap-10 xl:flex-row lg:gap-10">
+        {roomData.map((data: any, idx: number) => (
+            <HotelRoomCard
+              key={idx}
+              id={data.id} // ✅ ส่ง id ไป
+              imageUrl={data.url_picture[0]}
+              roomName={data.room_name}
+              pricePerNight={Number(data.price)}
+              description={data.description}
+              isAvailable={data.room_status === "available"}
+              onViewDetails={handleViewDetails} // ✅ ส่ง function ไป
+            />
+        ))}
+          </div>
       </section>
 
       <div className="flex flex-col items-center bg-gradient-to-r from-blue-500 to-blue-800 w-full text-white py-20">

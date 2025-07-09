@@ -94,3 +94,16 @@ export interface RoomDetailAdmin {
     url_picture: string[];
 }
 
+
+export interface BookingDetails {
+  roomId: string;
+  checkInDate: string;
+  checkOutDate: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  specialRequests: string;
+  totalPrice: number;
+  // เพิ่ม field อื่นๆ ที่จำเป็นสำหรับการบันทึกการจอง
+}
