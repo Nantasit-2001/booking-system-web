@@ -94,7 +94,7 @@ export const fetchUserDataWithToken = async (authToken: string) => {
 
 export const fetchBooking = async ()=>{
   try{
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/booking`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/booking`, {
       method: 'GET',
     });
     if (!res.ok) {
@@ -123,3 +123,67 @@ export const fetchInfoAdmin = async ()=>{
     console.error("Error fetch Infomation for Admin",error)
   }
 }
+
+
+
+export const updateReservationStatus = async (id: string,status:string) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/booking/update-status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+        status,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Failed to update reservation status');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error updating reservation status:', error);
+    throw error;
+  }
+};
+
+export const updatePaymentAmount = async (id: string, amount: number) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/booking/update-paid`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, amount }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to update payment');
+    }
+
+    return await res.json(); // { paid_amount, status_reservation }
+  } catch (err) {
+    console.error('Error updating payment:', err);
+    throw err;
+  }
+};
+
+// services/bookingService.ts
+export const deleteOrCancelBookingById = async (id: string) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/booking/deleteOrCancel/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to delete or cancel booking');
+  }
+
+  return res.json();
+};
+

@@ -3,7 +3,6 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../lib/prisma';
 
 export default async function adminRoomRoutes(fastify: FastifyInstance) {
-   console.log(">>> adminRoomRoutes registered")
   // GET /rooms
   fastify.get('/', async () => {
     return await prisma.rooms.findMany();

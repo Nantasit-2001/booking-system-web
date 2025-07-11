@@ -10,49 +10,6 @@ import { RoomDetailAdmin } from "@/types/types";
 import { fetchInfoAdmin } from "@/services/booking";
 const AdminBooking: React.FC = () => {
    const [cardMetrics, setCardMetrics] = useState<CardMetric[]>([]);
-//  const totalBookings = 48; // Example static value
-//   const confirmed = 156; // Example static value
-//   const pending = 78; // Example static value (as a percentage)
-//   const cancelled = 8; // Example static value
-//   const Revenue = 24560; // Example static value
-  
-//   const cardMetrics: CardMetric[] = [
-//     {
-//       title: 'Total Rooms',
-//       value: totalBookings,
-//       icon: "w",
-//       bgColor: 'bg-indigo-100',
-//       textColor: 'text-indigo-600',
-//     },
-//     {
-//       title: 'Total Bookings',
-//       value: confirmed,
-//       icon: "w",
-//       bgColor: 'bg-green-100',
-//       textColor: 'text-green-600',
-//     },
-//     {
-//       title: 'Occupancy Rate',
-//       value: `${cancelled}`,
-//       icon: "w",
-//       bgColor: 'bg-purple-100',
-//       textColor: 'text-purple-600',
-//     },
-//     {
-//       title: 'pending',
-//       value: `${pending}`,
-//       icon: "w",
-//       bgColor: 'bg-yellow-100',
-//       textColor: 'text-yellow-600',
-//     },{
-//       title: 'Revenue',
-//       value: `฿${Revenue.toLocaleString()}`,
-//       icon: "w",
-//       bgColor: 'bg-yellow-100',
-//       textColor: 'text-yellow-600',
-//     },
-//   ];
-
   
        useEffect(() => {
     const fetch = async () => {
@@ -71,35 +28,35 @@ const AdminBooking: React.FC = () => {
           {
             title: 'Total Rooms',
             value: totalRooms,
-            icon: 'w',
+            icon: 'R',
             bgColor: 'bg-indigo-100',
             textColor: 'text-indigo-600',
           },
           {
             title: 'Total Bookings',
             value: totalBooking,
-            icon: 'w',
+            icon: 'B',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
           },
           {
             title: 'Occupancy Rate',
             value: occupancyRate,
-            icon: 'w',
+            icon: '%',
             bgColor: 'bg-purple-100',
             textColor: 'text-purple-600',
           },
           {
             title: 'Pending',
             value: pendingCount,
-            icon: 'w',
+            icon: 'p',
             bgColor: 'bg-yellow-100',
             textColor: 'text-yellow-600',
           },
           {
             title: 'Revenue',
             value: `฿${Number(revenue).toLocaleString()}`,
-            icon: 'w',
+            icon: 'R',
             bgColor: 'bg-yellow-100',
             textColor: 'text-yellow-600',
           },

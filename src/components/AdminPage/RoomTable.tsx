@@ -3,19 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { RoomDetailAdmin } from '@/types/types'; // Adjust the import path as necessary
 import Link from 'next/link';
 import { fetchRoom,deleteRoom } from "@/services/room";
-interface RoomTableProps {
-    onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
-    onAddNewRoom: () => void;
-}
-
+import { LoadingComponent } from '../loading';
 const RoomTable: React.FC = () => {
     const [rooms, setRooms] = useState<RoomDetailAdmin[]>([]);
-
+    const [loading,setLoading] = useState<boolean>(true)
     useEffect(() => {
     const fetchRooms = async () => {
         try {
             const data = await fetchRoom();
+            setLoading(false)
             setRooms(data);
         } catch (error) {
             console.error('Failed to fetch rooms:', error);
@@ -38,7 +34,9 @@ const handleDeleteRoom = async (id: string) => {
     console.error(error);
   }
 };
-    return (
+    return <>    
+    {loading?<LoadingComponent text='loading'/>
+        :
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">Room Management</h2>
@@ -111,7 +109,7 @@ const handleDeleteRoom = async (id: string) => {
                                     </Link>
                                     <button
                                         onClick={() => handleDeleteRoom(room.id)}
-                                        className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100"
+                                        className="cursor-pointer text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100"
                                         title="Delete"
                                     >
                                         <div className="h-5 w-5">
@@ -127,7 +125,8 @@ const handleDeleteRoom = async (id: string) => {
                 </table>
             </div>
         </div>
-    );
+    }
+    </>
 };
 
 export default RoomTable;

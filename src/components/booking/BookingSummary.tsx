@@ -1,6 +1,7 @@
 import React from 'react';
 import { RoomDetail } from '@/types/types'; // ตรวจสอบให้แน่ใจว่า path ถูกต้อง
-
+import { formatNumberWithCommas } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 interface BookingSummaryProps {
   room: RoomDetail;
   checkInDate: string;
@@ -20,21 +21,6 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
   taxesFees,
   total,
 }) => {
-
-  // Helper function สำหรับจัดรูปแบบตัวเลขให้มีลูกน้ำและเป็นสกุลเงินบาท
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('th-TH', {
-      style: 'currency',
-      currency: 'THB',
-      minimumFractionDigits: 2, // กำหนดให้มีทศนิยม 2 ตำแหน่งเสมอ
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Helper function สำหรับจัดรูปแบบตัวเลขทั่วไปให้มีลูกน้ำ
-  const formatNumberWithCommas = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num); // ใช้ 'en-US' เพื่อให้ได้ลูกน้ำเป็น comma
-  };
 
   return (
     <div className="rounded-lg bg-white p-6 "> {/* เพิ่ม shadow-md เพื่อให้ดูดีขึ้น */}
@@ -84,10 +70,14 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
           {/* ใช้ formatCurrency สำหรับ taxesFees */}
           <span className="font-medium text-gray-800">{formatCurrency(taxesFees)}</span>
         </div>
+         <div className="mb-2 flex justify-between">
+          <span className="text-gray-600">Total</span>
+          <span className="font-medium text-gray-800">{formatCurrency(total)}</span>
+        </div>
         <div className="flex justify-between border-t border-gray-200 pt-4 text-lg font-bold">
-          <span>Total:</span>
+          <span>Deposit:</span>
           {/* ใช้ formatCurrency สำหรับ total */}
-          <span>{formatCurrency(total)}</span>
+          <span>{formatCurrency(total/2)}</span>
         </div>
       </div>
     </div>

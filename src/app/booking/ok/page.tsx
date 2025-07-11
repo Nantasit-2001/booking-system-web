@@ -9,7 +9,7 @@ const BookingSuccessPage = () => {
   const router = useRouter();
 
   const handleGoToBookings = () => {
-    router.push('/my-bookings');
+    router.push('/myBooking');
   };
 
   return (
@@ -22,7 +22,7 @@ const BookingSuccessPage = () => {
           <p className="text-gray-600 text-lg">Thank you for your reservation. We’ve confirmed your booking.</p>
           <button
             onClick={handleGoToBookings}
-            className="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition"
+            className="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition cursor-pointer"
           >
             Go to My Bookings
           </button>

@@ -1,4 +1,5 @@
 // services/createQrPayment.ts
+
 export async function createQrPayment({
   roomId,
   userAuthToken,
@@ -7,6 +8,7 @@ export async function createQrPayment({
   phoneNumber,
   specialRequests,
   totalPrice,
+  deposit
 }: {
   roomId: string;
   userAuthToken:string;
@@ -15,6 +17,7 @@ export async function createQrPayment({
   phoneNumber: string;
   specialRequests: string;
   totalPrice: number;
+  deposit:number;
 }) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/create`, {
     method: 'POST',
@@ -28,6 +31,7 @@ export async function createQrPayment({
       phoneNumber,
       specialRequests,
       totalPrice,
+      deposit,
     }),
   });
 
@@ -55,3 +59,5 @@ export const checkPaymentStatus = async (chargeId: string,userAuthToken:string) 
     throw error;
   }
 };
+
+

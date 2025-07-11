@@ -49,5 +49,5 @@ export const BookingHandler: React.FC<BookingHandlerProps> = ({
     handleBooking();
   }, [checkIn, checkOut]);
 
-  return loading ? <p className="text-center pt-2">กำลังจอง...</p> : null;
+  return loading ? <p className="text-center pt-2">Booking in progress...</p> : null;
 };

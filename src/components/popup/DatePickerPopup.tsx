@@ -93,9 +93,9 @@ const dialogVariants: Variants = {
               <div className="col-span-4 flex justify-end mt-2">
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                  className="cursor-pointer bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
                 >
-                  ยืนยัน
+                  confirm
                 </button>
               </div>
             </form>

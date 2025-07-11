@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
+import { LoadingComponent } from '../loading';
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -37,6 +38,9 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     checkRole();
   }, [isSignedIn]);
 
-  if (loading) return <h2 className='flex justify-center items-center h-screen text-4xl font-extrabold text-blue-800'>Loading...</h2>;
+  if (loading) return 
+          <div className="flex justify-center items-center h-screen">
+            <LoadingComponent text='loading room details...'/>
+          </div>
   return <>{children}</>;
 }

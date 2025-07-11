@@ -51,17 +51,26 @@ export interface SearchRoomProps {
 }
 
 export interface BookingAdmin {
-  Booking_id: string;
-  User: string;
-  Email: string;
-  Room: string;
-  Floor: number;
-  status: 'Confirmed' | 'Pending' | 'Checked-in' | 'cancelled';
-  Check_in: string;
-  Total: string;
-  Paid_Amount: string | number;
-  Remaining: string | number;
+  id: string;
+  users: {
+    name: string;
+    email: string;
+  };
+  rooms: {
+    room_name: string ;
+    room_type: string | null;
+  };
+  check_in: string;  // ISO Date string
+  check_out: string; // ISO Date string
+  total_price: number;
+  paid_amount: number;
+  status_reservation: "confirmed" | "canceled" | "pending" | "Not yet paid" | "checked-in"| "checked-out"; // Specific status values from the screenshot
+  phone_number?:string;
+  note?:string;
+  room_id?:string;
+  
 }
+
 
 export interface CardMetric {
   title: string;
@@ -92,6 +101,27 @@ export interface RoomDetailAdmin {
     room_status: 'available' | 'unavailable'| 'under Maintenance' ;
     description: string;
     url_picture: string[];
+}
+
+export interface UserBooking {
+  id: string;
+  users: {
+    name: string;
+    email: string;
+  };
+  rooms: {
+    room_name: string;
+    url_picture: string[];
+    room_type: string | null;
+  };
+  check_in: string; // ISO Date string
+  check_out: string; // ISO Date string
+  total_price: number;
+  paid_amount: number;
+  status_reservation: "confirmed" | "canceled" | "pending" | "Not yet paid" | "checked-in" | "checked-out";
+  phone_number?: string;
+  note?: string;
+  room_id?: string;
 }
 
 

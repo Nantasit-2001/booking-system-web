@@ -10,6 +10,7 @@ import { RoomDetailAdmin } from '@/types/types'; // Adjust path as necessary
 import { CreateRoom,getRoomById,updateRoom } from '@/services/room';
 import { uploadImagesToCloudinary } from '@/lib/uploadImagesToCloudinary';
 import ImageDisplayGrid from '@/components/AdminPage/ImageDisplayGrid';
+import { LoadingComponent } from '@/components/loading';
 
 // Mock list of room types for the Dropdown
 const mockRoomTypes = ['Standard', 'Deluxe', 'Suite', 'Executive'];
@@ -124,7 +125,6 @@ const RoomManagementPage: React.FC = () => {
 
     const handleDeleteRoom = () => {
         if (window.confirm(`Are you sure you want to delete "${roomData.room_name}"?`)) {
-            console.log("Deleting room:", roomData.id);
             // Call API to delete room
             // Example: axios.delete(`/api/rooms/${roomData.id}`)
             alert(`Room "${roomData.room_name}" deleted.`);
@@ -133,12 +133,12 @@ const RoomManagementPage: React.FC = () => {
     };
 
     if (isLoading) {
-        return <div className="p-6 text-center text-gray-600">Loading room details...</div>;
+        return <LoadingComponent text='Loading room details...'/>
     }
 
     return (
         <AdminGuard>
-        {isLoading?<h2 className='flex justify-center items-center h-screen text-4xl font-extrabold text-blue-800'>Loading...</h2>
+        {isLoading?<LoadingComponent text='Loading room details...'/>
         :
         <div className="min-h-screen bg-gray-100 p-6">
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 pb-3 mb-8">
@@ -267,7 +267,7 @@ const RoomManagementPage: React.FC = () => {
                         <button
                             type="button"
                             onClick={handleSaveChanges}
-                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />

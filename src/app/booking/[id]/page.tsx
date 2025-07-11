@@ -16,6 +16,7 @@ import { fetchClerkUserData } from '@/services/auth';
 import { useAuth } from '@clerk/nextjs'; // สำหรับใช้ Client-side Clerk Hooks
 import { useRouter } from 'next/navigation';
 import { BookingHandler } from '@/components/auth/BlockBooking';
+import { LoadingComponent } from '@/components/loading';
 
 const BookingPage = () => {
   const params = useParams();
@@ -98,10 +99,11 @@ const BookingPage = () => {
   }, [roomId, isLoaded, getToken]); // เพิ่ม getToken ใน dependency array
 
   const handleConfirmPayment = async () => {
-    if (!room || !userAuthToken) {
+    if (!room || !userAuthToken ) {
       alert("Missing room data or authentication token. Cannot confirm payment.");
       return;
     }
+    if(!phoneNumber){alert("Please enter your phone number."); return;}
 
     try {
       setIsSubmitting(true);
@@ -113,6 +115,7 @@ const BookingPage = () => {
         phoneNumber,
         specialRequests,
         totalPrice: total,
+        deposit: total/2
       });
 
       setQrCodeUrl(res.qrCodeUrl);
@@ -126,11 +129,7 @@ const BookingPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <p className="text-lg text-gray-700">Loading booking details...</p>
-      </div>
-    );
+    return <LoadingComponent text='Loading room details...'/>
   }
 
   if (error) {
@@ -163,6 +162,7 @@ const BookingPage = () => {
     }}
   />
 )}
+
     <div className="min-h-screen bg-gray-200 py-10 px-6">
       
       {/* Step Indicator */}

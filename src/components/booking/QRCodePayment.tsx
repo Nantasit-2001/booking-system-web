@@ -47,7 +47,6 @@
       const interval = setInterval(async () => {
         if(!userAuthToken)return
         const data = await checkPaymentStatus(chargeId,userAuthToken);
-        console.log(data,"===========")
         if (data.status === 'successful') {
           clearInterval(interval);
           window.location.href = '/booking/ok';
@@ -88,7 +87,7 @@
             >
               <button
                 onClick={closeModal}
-                className={`absolute -top-3 -right-3 p-2 bg-red-600 text-white rounded-full
+                className={`cursor-pointer absolute -top-3 -right-3 p-2 bg-red-600 text-white rounded-full
                           hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75`}
                 aria-label="Close"
               >
@@ -108,12 +107,12 @@
         <button
           onClick={onConfirmPayment}
           disabled={isLoading || !!qrCodeUrl}
-          className="mt-4 flex w-full items-center justify-center rounded-md bg-indigo-600 py-3 text-lg font-semibold text-white shadow-md transition duration-200 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+          className="cursor-pointer mt-4 flex w-full items-center justify-center rounded-md bg-indigo-600 py-3 text-lg font-semibold text-white shadow-md transition duration-200 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
         >
           {isLoading ? 'Processing...' : 'Confirm Payment'}
         </button>
         {(!qrCodeUrl)&&<button 
-        className="mt-4 flex w-full items-center justify-center rounded-md bg-red-600 py-3 text-lg font-semibold text-white shadow-md transition duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+        className="cursor-pointer mt-4 flex w-full items-center justify-center rounded-md bg-red-600 py-3 text-lg font-semibold text-white shadow-md transition duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
           onClick={handelcancelBooking}
           >Cancel</button>}
       </div>

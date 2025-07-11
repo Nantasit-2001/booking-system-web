@@ -59,7 +59,7 @@ const ImageUploadDisplay: React.FC<ImageUploadDisplayProps> = ({ images, onImage
             />
             <button
               onClick={() => handleRemoveImage(index)}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="cursor-pointer absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Remove image"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

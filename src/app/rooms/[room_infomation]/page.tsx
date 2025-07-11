@@ -6,8 +6,10 @@ import { fetchRoomById } from '@/services/room'; // Import your fetch function
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/footer/InlandingPage';
 import CardImage from '@/components/card/CardImage';
-import DatePickerPopup from '@/components/DatePickerPopup';
+import DatePickerPopup from '@/components/popup/DatePickerPopup';
 import { BookingHandler } from '@/components/auth/BlockBooking';
+import { formatNumberWithCommas } from '@/utils/currency';
+import { LoadingComponent } from '@/components/loading';
 interface RoomData {
   id: string;
   room_name: string;
@@ -46,7 +48,6 @@ const [resultMessage, setResultMessage] = useState<string | null>(null);
         setLoading(true);
         const data = await fetchRoomById(id);
         setRoomData(data);
-        console.log(data)
       
       } catch (err) {
         console.error("Failed to fetch room details:", err);
@@ -62,7 +63,7 @@ const [resultMessage, setResultMessage] = useState<string | null>(null);
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-600">Loading room details...</p>
+        <LoadingComponent text='loading room details...'/>
       </div>
     );
   }
@@ -139,7 +140,7 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
             </div>
 
             <div className="text-4xl font-bold text-blue-500 mt-6 flex justify-between items-end">
-              ฿{roomData.price} <span className="text-lg font-normal text-gray-500">per night</span></div>
+              ฿{formatNumberWithCommas(roomData.price)} <span className="text-lg font-normal text-gray-500">per night</span></div>
 
             <div className="grid grid-cols-2 gap-4 text-gray-700 mt-10">
               <div className="flex items-center">

@@ -74,7 +74,7 @@ const handleNavigationToSection = (sectionId: string) => {
             Rooms
           </Link>
           {isAuthenticated && (
-            <Link href="/my-bookings" className="text-gray-700 hover:text-blue-700 font-medium">
+            <Link href="/myBooking" className="text-gray-700 hover:text-blue-700 font-medium">
               My Bookings
             </Link>
           )}
@@ -158,7 +158,7 @@ const handleNavigationToSection = (sectionId: string) => {
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none cursor-pointer"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -180,7 +180,7 @@ const handleNavigationToSection = (sectionId: string) => {
             </Link>
 
             {isAuthenticated ? (
-              <Link href="/my-bookings" className="block text-gray-700 hover:text-blue-700 font-medium py-2 px-4 rounded-md" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href="/myBooking" className="block text-gray-700 hover:text-blue-700 font-medium py-2 px-4 rounded-md" onClick={() => setIsMobileMenuOpen(false)}>
                 My Bookings
               </Link>
             ) : (
