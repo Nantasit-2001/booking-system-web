@@ -10,6 +10,7 @@ import DatePickerPopup from '@/components/popup/DatePickerPopup';
 import { BookingHandler } from '@/components/auth/BlockBooking';
 import { formatNumberWithCommas } from '@/utils/currency';
 import { LoadingComponent } from '@/components/loading';
+import FloatingChat from '@/components/FloatingChat';
 interface RoomData {
   id: string;
   room_name: string;
@@ -220,6 +221,7 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
           </div>
         </div>
       </div>
+      <FloatingChat/>
       <Footer/>
     </div>
   );

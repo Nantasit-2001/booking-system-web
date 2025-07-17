@@ -11,6 +11,7 @@ import BookingDetailPopup from '@/components/popup/BookingDetailPopup';
 import { useRouter } from 'next/navigation';
 import { deleteOrCancelBookingById } from '@/services/booking';
 import { LoadingComponent } from '@/components/loading';
+import FloatingChat from '@/components/FloatingChat';
 
 const MyBookingsPage: React.FC = () => {
   // สมมติว่าคุณมีข้อมูลการจอง array มาจาก API หรือ state
@@ -145,6 +146,7 @@ const handleCancel = async (bookingId: string) => {
 </div>
       </div>
     </div>
+    <FloatingChat/>
     <Footer/>
     </>
   );

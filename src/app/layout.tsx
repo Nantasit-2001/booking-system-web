@@ -32,9 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <RoomSearchProvider>
-        {children}
-        </RoomSearchProvider>
+          <RoomSearchProvider>
+            {children}
+          </RoomSearchProvider>
       </body>
     </html>
     </ClerkProvider>

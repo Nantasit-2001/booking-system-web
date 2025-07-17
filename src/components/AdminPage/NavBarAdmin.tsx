@@ -6,6 +6,7 @@ const NavBarAdmin: React.FC = () => {
     const pathname = usePathname();
     const isRooms = pathname === "/admin/rooms";
     const isBooking = pathname === "/admin/booking";
+    const isDocuments = pathname === "/admin/documents";
     const { signOut } = useClerk();
     return (
         <nav className="bg-white p-4 shadow-sm flex justify-between items-center px-8 md:px-20">
@@ -31,6 +32,16 @@ const NavBarAdmin: React.FC = () => {
                         }`}
                     >
                         Booking Overview
+                    </Link>
+                    <Link
+                        href="/admin/documents"
+                        className={`font-medium pb-1 ${
+                            isDocuments
+                                ? "text-blue-600 border-b-2 border-blue-600"
+                                : "text-gray-600 hover:text-blue-600"
+                        }`}
+                    >
+                        Documents
                     </Link>
                 </div>
             </div>

@@ -9,6 +9,7 @@ import { RoomDetail } from "@/types/types";
 import { useRoomSearch } from "@/Context/context";
 import { useRouter } from 'next/navigation'; 
 import { LoadingComponent } from "@/components/loading";
+import FloatingChat from "@/components/FloatingChat";
 
 const BookingPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDetail[]>([]);
@@ -102,6 +103,7 @@ const BookingPage: React.FC = () => {
           ))
         )}
       </div>
+    <FloatingChat/>
     </div>
   );
 };

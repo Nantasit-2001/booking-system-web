@@ -17,6 +17,7 @@ import { useAuth } from '@clerk/nextjs'; // สำหรับใช้ Client-s
 import { useRouter } from 'next/navigation';
 import { BookingHandler } from '@/components/auth/BlockBooking';
 import { LoadingComponent } from '@/components/loading';
+import FloatingChat from '@/components/FloatingChat';
 
 const BookingPage = () => {
   const params = useParams();
@@ -236,6 +237,7 @@ const BookingPage = () => {
       </div>
       <div className='text-center text-gray-500 pt-8 text-xl'>Please pay within 15 minutes.</div>
     </div>
+    <FloatingChat/>
     <Footer/>
     </>
   );
