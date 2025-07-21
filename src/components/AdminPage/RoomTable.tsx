@@ -4,9 +4,14 @@ import { RoomDetailAdmin } from '@/types/types'; // Adjust the import path as ne
 import Link from 'next/link';
 import { fetchRoom,deleteRoom } from "@/services/room";
 import { LoadingComponent } from '../loading';
+import { PopupAlert } from '../popup/PopupAlert';
+
 const RoomTable: React.FC = () => {
     const [rooms, setRooms] = useState<RoomDetailAdmin[]>([]);
     const [loading,setLoading] = useState<boolean>(true)
+    const [isAlert,setIsAlert] = useState<boolean>(false)
+    const [idDelete,setIdDelete] = useState<string>("")
+
     useEffect(() => {
     const fetchRooms = async () => {
         try {
@@ -22,21 +27,31 @@ const RoomTable: React.FC = () => {
     }, []);
 
 const handleDeleteRoom = async (id: string) => {
-  const confirmed = window.confirm("Are you sure you want to delete this room?");
-  if (!confirmed) return;
-
   try {
     await deleteRoom(id); // เรียก API
     setRooms(prev => prev.filter(room => room.id !== id)); // อัปเดต state UI
-    alert("Room deleted successfully.");
+    console.log("Room deleted successfully.");
   } catch (error) {
-    alert("Failed to delete room.");
-    console.error(error);
-  }
+    console.error("Failed to delete room :",error);
+  }finally{
+    setIsAlert(false)
+    setIdDelete("")
+    }
 };
     return <>    
+    
+    <PopupAlert
+        isOpen={isAlert}
+        title={"Are you sure?"}
+        message={"Are you sure you want to delete this document?"}
+        onClose={() => setIsAlert(false)}
+        onConfirm={()=>handleDeleteRoom(idDelete)}
+        showCancelButton={true}
+    />  
+    
     {loading?<LoadingComponent text='loading'/>
         :
+        
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">Room Management</h2>
@@ -108,7 +123,7 @@ const handleDeleteRoom = async (id: string) => {
                                         </div>
                                     </Link>
                                     <button
-                                        onClick={() => handleDeleteRoom(room.id)}
+                                        onClick={() => {setIsAlert(true); setIdDelete(room.id)}}
                                         className="cursor-pointer text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100"
                                         title="Delete"
                                     >

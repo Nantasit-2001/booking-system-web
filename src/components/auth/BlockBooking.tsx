@@ -30,7 +30,7 @@ export const BookingHandler: React.FC<BookingHandlerProps> = ({
       setLoading(true);
       const token = await getToken();
       if (!token) {
-        onResult({ success: false, message: "No token found" });
+        onResult({ success: false, message: "User not signed in" });
         setLoading(false);
         return;
       }

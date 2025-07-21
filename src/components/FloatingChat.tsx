@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { motion } from 'framer-motion'
 import { askQuestionToBot } from '@/services/chat'
 import { useAuth } from '@clerk/nextjs';
@@ -11,43 +11,51 @@ export type Message = {
   sender: 'user' | 'bot'
 }
 
-export default function FloatingChat() {
+export type FloatingChatHandle = {
+  openChat: () => void
+}
+
+const FloatingChat = forwardRef<FloatingChatHandle>((props, ref) => {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
-  const [token,setToken] = useState<string>("");
+  const [token,setToken] = useState<string>("")
   const [messages, setMessages] = useState<Message[]>([])
   const bottomRef = useRef<HTMLDivElement>(null)
   const {getToken} = useAuth();
 
+  useImperativeHandle(ref, () => ({
+    openChat() {
+      setOpen(true)
+    }
+  }))
 
   const handleSend = async () => {
-  if (!text.trim()) return
+    if (!text.trim()) return
 
-  const userMessage: Message = {
-    id: Date.now(),
-    text,
-    sender: 'user',
-  }
+    const userMessage: Message = {
+      id: Date.now(),
+      text,
+      sender: 'user',
+    }
 
-  const typingIndicator: Message = {
-    id: Date.now() + 1,
-    text: '🤖 Thinking...',
-    sender: 'bot',
-  }
-  setMessages((prev) => [...prev, userMessage, typingIndicator])
-  setText('')
-  const replyText = await askQuestionToBot(userMessage.text,messages,token)
-
-  // ลบ typingIndicator
-  setMessages((prev) => [
-    ...prev.filter((msg) => msg.id !== typingIndicator.id),
-    {
-      id: Date.now() + 2,
-      text: replyText,
+    const typingIndicator: Message = {
+      id: Date.now() + 1,
+      text: '🤖 Thinking...',
       sender: 'bot',
-    },
-  ])
-}
+    }
+    setMessages((prev) => [...prev, userMessage, typingIndicator])
+    setText('')
+    const replyText = await askQuestionToBot(userMessage.text, messages, token)
+
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.id !== typingIndicator.id),
+      {
+        id: Date.now() + 2,
+        text: replyText,
+        sender: 'bot',
+      },
+    ])
+  }
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -57,7 +65,6 @@ export default function FloatingChat() {
     fetchToken();
   }, [getToken]);
 
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
@@ -66,8 +73,8 @@ export default function FloatingChat() {
     <>
       {/* ปุ่มเปิดแชท */}
       <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-5 right-5 bg-blue-400 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-xl z-100 "
+        onClick={() => setOpen((prev) => !prev)}  // กดเปิดอย่างเดียว ไม่ toggle
+        className="cursor-pointer fixed bottom-5 right-5 bg-blue-400 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-xl z-100 "
       >
         💬
       </button>
@@ -80,8 +87,15 @@ export default function FloatingChat() {
           className="fixed bottom-18 right-5 w-80 max-h-[500px] flex flex-col bg-white border border-gray-500 rounded-xl shadow-xl z-50"
         >
           {/* หัวแชท */}
-          <div className="bg-blue-600 text-white p-3 rounded-t-xl font-semibold">
+          <div className="bg-blue-600 text-white p-3 rounded-t-xl font-semibold flex justify-between items-center">
             🌟 Chat Assistant
+            <button
+              onClick={() => setOpen(false)}
+              className="text-white font-bold text-lg"
+              aria-label="Close chat"
+            >
+              ✕
+            </button>
           </div>
 
           {/* รายการข้อความ */}
@@ -93,7 +107,7 @@ export default function FloatingChat() {
                   msg.sender === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'
                 }`}
               >
-                {(msg.sender === 'bot' && msg.text!=='🤖 Thinking...')? '🤖 respond: '+ msg.text :msg.text}
+                {(msg.sender === 'bot' && msg.text !== '🤖 Thinking...') ? '🤖 respond: ' + msg.text : msg.text}
               </div>
             ))}
             <div ref={bottomRef} />
@@ -125,4 +139,6 @@ export default function FloatingChat() {
       )}
     </>
   )
-}
+})
+
+export default FloatingChat

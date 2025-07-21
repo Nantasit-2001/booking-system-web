@@ -12,6 +12,7 @@ const HotelRoomCard: React.FC<Props> = ({
   id,
   imageUrl,
   roomName,
+  maxGuests,
   pricePerNight,
   description,
   isAvailable,
@@ -37,7 +38,8 @@ const HotelRoomCard: React.FC<Props> = ({
       <div className="flex-1 p-5 flex flex-col">
         <div className="relative flex justify-between items-baseline mb-5">
           <h3 className="text-xl font-semibold text-gray-800">{roomName}</h3>
-          <p className="text-2xl font-bold text-blue-600">${formatNumberWithCommas(pricePerNight)}</p>
+          <p className="text-2xl font-bold text-blue-600">฿{formatNumberWithCommas(pricePerNight)}</p>
+          <p className="absolute left-[1px] top-7 text-right text-[13px] text-gray-500 mb-4">maxGuests {maxGuests}</p>
           <p className="absolute right-[-2px] top-6.5 text-right text-sm text-gray-500 mb-4">per night</p>
         </div>
         <p className="text-gray-700 text-base mb-4 flex-1 line-clamp-4">{description}</p>

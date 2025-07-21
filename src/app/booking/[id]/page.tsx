@@ -3,11 +3,10 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/footer/InlandingPage';
+import Footer from '@/components/Footer';
 import { useParams, useSearchParams } from 'next/navigation';
 import { RoomDetail } from '@/types/types';
 import { fetchRoomById } from '@/services/room';
-import { submitBooking } from '@/services/booking';
 import GuestInformationForm from '@/components/booking/GuestInformationForm';
 import BookingSummary from '@/components/booking/BookingSummary';
 import QRCodePayment from '@/components/booking/QRCodePayment';
@@ -17,7 +16,7 @@ import { useAuth } from '@clerk/nextjs'; // สำหรับใช้ Client-s
 import { useRouter } from 'next/navigation';
 import { BookingHandler } from '@/components/auth/BlockBooking';
 import { LoadingComponent } from '@/components/loading';
-import FloatingChat from '@/components/FloatingChat';
+import { PopupAlert } from '@/components/popup/PopupAlert';
 
 const BookingPage = () => {
   const params = useParams();
@@ -35,8 +34,17 @@ const BookingPage = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [chargeId, setChargeId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState('');
   const [bookingRequested, setBookingRequested] = useState<boolean>(true);
-
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    confirmOnly?: boolean;
+    onConfirm?: () => void;
+    back?:boolean
+  }>({ open: false, title: '', message: '', confirmOnly: true });
+  
   const checkInDate = searchParams.get('checkIn') || 'N/A';
   const checkOutDate = searchParams.get('checkOut') || 'N/A';
 
@@ -65,6 +73,53 @@ const BookingPage = () => {
     return roomRate + taxesFees;
   }, [roomRate, taxesFees]);
 
+  useEffect(() => {
+    const durationInSeconds = 15 * 60;
+    let remaining = durationInSeconds;
+
+    const intervalId = setInterval(() => {
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+
+      const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      setTimeLeft(formatted);
+      remaining--;
+
+      if (remaining < 0) {
+        clearInterval(intervalId);
+
+        setAlert({
+          open: true,
+          title: 'out of time',
+          message: 'Please make a new reservation.',
+          confirmOnly: true,
+          onConfirm: () => {setAlert((prev) => ({ ...prev, open: false }));},
+          back:true,
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+  
+// อยู่ภายใน BookingPage component
+useEffect(() => {
+  let intervalId: NodeJS.Timeout;
+  const refreshToken = async () => {
+    if (getToken) {
+      const freshToken = await getToken();
+      if (freshToken) setUserAuthToken(freshToken);
+    }
+  };
+  if (isLoaded) {
+    // refresh ทุก 1 นาที
+    refreshToken(); // ดึงรอบแรกทันที
+    intervalId = setInterval(refreshToken, 15 * 1000);
+  }
+  return () => {
+    if (intervalId) clearInterval(intervalId);
+  };
+}, [isLoaded, getToken]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,7 +135,6 @@ const BookingPage = () => {
           const userData = await fetchClerkUserData(getToken); // ส่ง getToken เข้าไป
           setClerkUsername(userData.username);
           setClerkEmail(userData.email);
-          setUserAuthToken(userData.token);
         }
       } catch (err) {
         console.error("Failed to load booking data:", err);
@@ -91,8 +145,6 @@ const BookingPage = () => {
     };
 
     if (roomId) {
-        // ต้องรอให้ isLoaded ของ Clerk เป็น true ก่อนที่จะเรียก loadData เพื่อให้ getToken พร้อมใช้งาน
-        // การใส่ isLoaded ใน dependency array จะช่วยให้ useEffect ทำงานซ้ำเมื่อ isLoaded เปลี่ยน
         if (isLoaded) {
             loadData();
         }
@@ -101,10 +153,25 @@ const BookingPage = () => {
 
   const handleConfirmPayment = async () => {
     if (!room || !userAuthToken ) {
-      alert("Missing room data or authentication token. Cannot confirm payment.");
+      setAlert({
+      open: true,
+      title: "An error occurred.",
+      message: "Please cancel and book again. (Missing room data or authentication token. Cannot confirm payment.)",
+      confirmOnly: true,
+      onConfirm: () => setAlert({ ...alert, open: false }),
+    });
+    return;
+  }
+    if (!phoneNumber) {
+      setAlert({
+        open: true,
+        title: "Please fill in the information.",
+        message: "Please enter your phone number.",
+        confirmOnly: true,
+        onConfirm: () => setAlert({ ...alert, open: false }),
+      });   
       return;
     }
-    if(!phoneNumber){alert("Please enter your phone number."); return;}
 
     try {
       setIsSubmitting(true);
@@ -124,6 +191,13 @@ const BookingPage = () => {
     } catch (err: any) {
       console.error('Payment init failed:', err);
       setError('Could not create payment');
+      setAlert({
+        open: true,
+        title: "An error occurred.",
+        message: "Unable to generate QR Code. Please try again.",
+        confirmOnly: true,
+        onConfirm: () => setAlert({ ...alert, open: false }),
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -134,11 +208,13 @@ const BookingPage = () => {
   }
 
   if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
+    setAlert({
+        open: true,
+        title: "An error occurred.",
+        message: `Unable to generate QR Code. Please try again. (${error})`,
+        confirmOnly: true,
+        onConfirm: () => setAlert({ ...alert, open: false }),
+      });
   }
 
   if (!room) {
@@ -152,20 +228,29 @@ const BookingPage = () => {
   return (
     <>
     <Navbar/>
-{bookingRequested && checkOutDate && checkInDate && roomId && (
-    <BookingHandler
-    roomId={Number(roomId)}
-    checkIn={checkInDate}
-    checkOut={checkOutDate}
-    onResult={({ success }) => {
-      (!success && router.push('/'));
-      setBookingRequested(false);
-    }}
-  />
-)}
+    
+    {bookingRequested && checkOutDate && checkInDate && roomId && (
+      <BookingHandler
+        roomId={Number(roomId)}
+        checkIn={checkInDate}
+        checkOut={checkOutDate}
+        onResult={({ success }) => {
+        (!success && router.push('/'));
+        setBookingRequested(false);
+        }}
+      />
+    )}
 
-    <div className="min-h-screen bg-gray-200 py-10 px-6">
-      
+    <PopupAlert
+      isOpen={alert.open}
+      title={alert.title}
+      message={alert.message}
+      onClose={() => {(alert.back?router.back():setAlert({ ...alert, open: false }))}}
+      onConfirm={alert.onConfirm}
+      showCancelButton={!alert.confirmOnly}
+    />  
+
+    <div className="min-h-screen bg-gray-200 py-10 px-6">  
       {/* Step Indicator */}
       <div className="hidden sm:flex mx-auto mb-10 w-full max-w-6xl items-center justify-center space-x-8">
         <div className="flex items-center space-x-2">
@@ -235,9 +320,9 @@ const BookingPage = () => {
           />
         </div>
       </div>
-      <div className='text-center text-gray-500 pt-8 text-xl'>Please pay within 15 minutes.</div>
+      <div className='text-center text-gray-500 pt-8 text-xl'>Please pay within {timeLeft} minutes.</div>
+      <div className={`text-center text-gray-400 pt-2 text-[10px] `}>If there is less than 10 seconds left, you should cancel the booking and rebook for safe payment.</div>
     </div>
-    <FloatingChat/>
     <Footer/>
     </>
   );

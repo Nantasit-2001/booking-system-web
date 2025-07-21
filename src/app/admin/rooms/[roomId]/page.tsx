@@ -11,9 +11,11 @@ import { CreateRoom,getRoomById,updateRoom } from '@/services/room';
 import { uploadImagesToCloudinary } from '@/lib/uploadImagesToCloudinary';
 import ImageDisplayGrid from '@/components/AdminPage/ImageDisplayGrid';
 import { LoadingComponent } from '@/components/loading';
+import { PopupAlert } from '@/components/popup/PopupAlert';
+import { deleteRoom } from '@/services/room';
 
 // Mock list of room types for the Dropdown
-const mockRoomTypes = ['Standard', 'Deluxe', 'Suite', 'Executive'];
+const roomTypes = ['Standard', 'Deluxe', 'Suite'];
 
 const RoomManagementPage: React.FC = () => {
     const router = useRouter();
@@ -33,6 +35,31 @@ const RoomManagementPage: React.FC = () => {
         url_picture: []
     });
     const [isLoading, setIsLoading] = useState(true);
+      const [alert, setAlert] = useState<{
+        open: boolean;
+        title: string;
+        message: string;
+        confirmOnly?: boolean;
+        onConfirm?: () => void;
+    }>({
+        open: false,
+        title: '',
+        message: '',
+        confirmOnly: true,
+    });
+    
+    const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+        setAlert({
+            open: true,
+            title,
+            message,
+            confirmOnly: true,
+            onConfirm: () => {
+            setAlert((prev) => ({ ...prev, open: false }));
+            if (onConfirm) onConfirm();
+            },
+        });
+    };
 
     useEffect(() => {
         if (roomId && roomId !== 'create') { // Check if roomId exists and is not 'create'
@@ -87,11 +114,14 @@ const RoomManagementPage: React.FC = () => {
         try {
             setIsLoading(true);
 
-            if (!roomData.room_name.trim()) return alert("Please enter the Room Name.");
-            if (!roomData.room_type.trim()) return alert("Please select the Room Type.");
-            if (!roomData.description.trim()) return alert("Please enter the Room Description.");
-            if (roomData.price <= 0) return alert("Price must be greater than 0.");
-            if (roomData.max_guests <= 0) return alert("Max Guests must be greater than 0.");
+            if (!roomData.room_name.trim()) return showAlert("Validation Error","Please enter the Room Name.");
+            if (!roomData.room_type.trim()) return showAlert("Validation Error","Please select the Room Type.");
+            if (!roomData.description.trim()) return showAlert("Validation Error","Please enter the Room Description.");
+            if (roomData.price <= 0) return showAlert("Validation Error", "Price must be greater than 0.");
+            if (roomData.max_guests <= 0) return showAlert("Validation Error","Max Guests must be greater than 0.");
+            if (selectedImages.length<=0) return showAlert("Validation Error","You must have at least 1 image.");
+
+
 
             if (isEditMode && roomId) {
                 await updateRoom(roomId, roomData);
@@ -111,11 +141,11 @@ const RoomManagementPage: React.FC = () => {
             ) {
             const err = error as { status?: number; message?: string };
             if (err.status === 409 && err.message === 'DUPLICATE_ROOM_NAME') {
-                    alert('Room Name already exists. Please choose another name.');
+                    showAlert("An error occurred.",'Room Name already exists. Please choose another name.');
                     return;
                 }
             }
-            alert('An error occurred while saving the room.');
+            showAlert("An error occurred.",'An error occurred while saving the room.');
         }finally{setIsLoading(false);}
 };
 
@@ -123,14 +153,23 @@ const RoomManagementPage: React.FC = () => {
         router.back(); // Go back to the previous page
     };
 
-    const handleDeleteRoom = () => {
-        if (window.confirm(`Are you sure you want to delete "${roomData.room_name}"?`)) {
-            // Call API to delete room
-            // Example: axios.delete(`/api/rooms/${roomData.id}`)
-            alert(`Room "${roomData.room_name}" deleted.`);
-            router.push('/rooms'); // Redirect to room list after deletion
-        }
-    };
+const handleDeleteRoom = () => {
+  setAlert({
+    open: true,
+    title: 'Confirm Deletion',
+    message: `Are you sure you want to delete "${roomData.room_name}"?`,
+    confirmOnly: false, // แสดงปุ่ม Cancel ด้วย
+    onConfirm: () => {
+      setAlert(prev => ({ ...prev, open: false }));
+      const functionDelete = async() =>{
+        await deleteRoom(roomData.id);
+        router.push('/admin/rooms');
+      }
+      functionDelete();
+
+    },
+  });
+};
 
     if (isLoading) {
         return <LoadingComponent text='Loading room details...'/>
@@ -138,6 +177,14 @@ const RoomManagementPage: React.FC = () => {
 
     return (
         <AdminGuard>
+            <PopupAlert
+                isOpen={alert.open}
+                title={alert.title}
+                message={alert.message}
+                onClose={() => setAlert({ ...alert, open: false })}
+                onConfirm={alert.onConfirm}
+                showCancelButton={!alert.confirmOnly}
+            />
         {isLoading?<LoadingComponent text='Loading room details...'/>
         :
         <div className="min-h-screen bg-gray-100 p-6">
@@ -189,7 +236,7 @@ const RoomManagementPage: React.FC = () => {
                             <label htmlFor="roomType" className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
                             <Dropdown
                                 label="Room Type"
-                                options={mockRoomTypes}
+                                options={roomTypes}
                                 selectedValue={roomData.room_type}
                                 onSelect={handleRoomTypeSelect}
                             />

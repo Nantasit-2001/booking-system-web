@@ -2,8 +2,7 @@ import TopContent from "@/components/page/landing/TopContent";
 import Navbar from "@/components/Navbar";
 import WhyChooseHotel from "@/components/page/landing/WhyChooseHotel";
 import RoomTypes from "@/components/page/landing/RoomTypes";
-import Footer from "@/components/footer/InlandingPage";
-import FloatingChat from "@/components/FloatingChat"
+import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
@@ -11,7 +10,6 @@ export default function Home() {
       <TopContent />
       <WhyChooseHotel />
       <RoomTypes />   
-      <FloatingChat/>
       <Footer />
     </>
   );

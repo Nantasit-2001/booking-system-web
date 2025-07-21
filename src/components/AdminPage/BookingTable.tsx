@@ -8,6 +8,7 @@ import { updateReservationStatus,updatePaymentAmount,deleteOrCancelBookingById }
 import PaymentPopup from "../popup/GetCashPopup";
 import { BookingAdmin } from "@/types/types";
 import { LoadingComponent } from "../loading";
+import { PopupAlert } from "../popup/PopupAlert";
 // Adjusted the BookingAdmin interface to match the screenshot's data structure
 
 const BookingTable: React.FC = () => {
@@ -22,6 +23,8 @@ const BookingTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<BookingAdmin | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  const [isAlert,setIsAlert] = useState<boolean>(false)
+  const [idDelete,setIdDelete] = useState<string>("")
   const [selectedReservation, setSelectedReservation] = useState<BookingAdmin | null>(null);
   const statusDropdownRef = useRef<DropdownRef>(null);
   const roomTypeDropdownRef = useRef<DropdownRef>(null);
@@ -39,10 +42,10 @@ const handleCheckIn = async (id: string) => {
         )
       );
     } else {
-      console.warn("ไม่สามารถอัปเดตสถานะได้");
+      console.warn("Unable to update status");
     }
   } catch (err) {
-    console.error("เกิดข้อผิดพลาดระหว่างการเช็คอิน:", err);
+    console.error("An error occurred during check-in.:", err);
   }
 };
 
@@ -59,10 +62,10 @@ const handleCheckOut = async (id: string) => {
         )
       );
     } else {
-      console.warn("ไม่สามารถอัปเดตสถานะได้");
+      console.warn("Unable to update status");
     }
   } catch (err) {
-    console.error("เกิดข้อผิดพลาดระหว่างการเช็คเอาท์:", err);
+    console.error("An error occurred during check-out.:", err);
   }
 };
 
@@ -89,7 +92,7 @@ const handlePaymentSubmit = async (amountPaidNow: number) => {
       )
     );
   } catch (err) {
-    console.error('เกิดข้อผิดพลาดในการอัปเดตการชำระเงิน:', err);
+    console.error('An error occurred while updating the payment: ', err);
   }
 };
 
@@ -102,7 +105,6 @@ const handleViewDetail = (reservation: BookingAdmin) => {
 const handleDeleteBooking = async (id: string) => {
   try {
     const result = await deleteOrCancelBookingById(id);
-    // result: { action: 'deleted' | 'canceled' }
 
     setReservation((prev) => {
       if (result.action === 'deleted') {
@@ -118,7 +120,9 @@ const handleDeleteBooking = async (id: string) => {
     });
   } catch (error: any) {
     console.error("Delete booking error:", error);
-    alert(`ไม่สามารถลบ/ยกเลิกการจองได้: ${error.message}`);
+  }finally{
+    setIsAlert(false);
+    setIdDelete("");
   }
 };
 
@@ -231,6 +235,16 @@ const handleDeleteBooking = async (id: string) => {
   if(loading){return <LoadingComponent text='Loading'/>}
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm ">
+
+      <PopupAlert
+        isOpen={isAlert}
+        title={"Are you sure?"}
+        message={"Are you sure you want to delete this reservation?"}
+        onClose={() => setIsAlert(false)}
+        onConfirm={()=>handleDeleteBooking(idDelete)}
+        showCancelButton={true}
+      />  
+
       <PaymentPopup
         isOpen={showPopup}
         onClose={() => setShowPopup(false)}
@@ -244,12 +258,13 @@ const handleDeleteBooking = async (id: string) => {
         onClose={() => setShowDetail(false)}
         reservation={selectedReservation}
       />)}
-      <div className=" flex flex-row justify-between items-center mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 w-[250px]">Booking Management</h2>
+      <div className=" flex flex-col items-center xl:flex-row mb-8 mt-2 ">
+        <h2 className="text-xl text-center font-semibold text-gray-800 w-[250px]  pb-6 xl:pb-1 xl:ml-2">Booking Management</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-2 xl:gap-0 items-center">
-          <div className="flex items-center space-x-2 w-[200px]">
-            <span className="text-gray-600 text-sm font-medium">Status:</span>
+      <div className="flex flex-col gap-2 xl:gap-0 xl:flex-row items-center pl-4">
+        <div className="flex justify-between items-center gap-6">
+          <div className="flex items-center justify-start gap-2">
+            <span className="text-gray-600 text-sm font-medium ">Status:</span>
             <Dropdown
               ref={statusDropdownRef}
               label="Status"
@@ -259,8 +274,8 @@ const handleDeleteBooking = async (id: string) => {
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-600 text-sm font-medium w-[120px] ">
+          <div className="flex items-center gap-2 justify-start ">
+            <span className="text-gray-600 text-sm font-medium min-w-[75px]">
               Room Type:
             </span>
             <Dropdown
@@ -271,8 +286,9 @@ const handleDeleteBooking = async (id: string) => {
               onSelect={setRoomTypeFilter}
             />
           </div>
-
-          <div className="flex items-center space-x-2 ml-0 lg:ml-4">
+        </div>
+         <div className="flex justify-between items-center gap-6 ml-6">
+          <div className="flex items-center justify-start gap-2">
             <span className="text-gray-600 text-sm font-medium">From:</span>
             <input
               type="date"
@@ -282,8 +298,8 @@ const handleDeleteBooking = async (id: string) => {
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-600 text-sm font-medium">To:</span>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600 text-sm font-medium ">To:</span>
             <input
               type="date"
               className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -291,8 +307,7 @@ const handleDeleteBooking = async (id: string) => {
               onChange={(e) => setToDate(e.target.value)}
             />
           </div>
-
-          <div className="relative flex-grow max-w-xs">
+          <div className="relative flex-grow max-w-[200px] ">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
                 className="h-5 w-5 text-gray-400"
@@ -319,7 +334,7 @@ const handleDeleteBooking = async (id: string) => {
           </div>
         </div>
       </div>
-
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -456,7 +471,7 @@ const handleDeleteBooking = async (id: string) => {
                 <button
                   onClick={() => handleCheckIn(item.id)} // ใช้ booking_id ที่เป็น string
                   className="cursor-pointer text-green-600 hover:text-green-900 p-1 rounded-full hover:bg-green-100"
-                  title="Mark as Confirmed"
+                  title="Check In"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -502,7 +517,7 @@ const handleDeleteBooking = async (id: string) => {
                 <button
                   onClick={() => handleClickMoney(item)}
                   className="cursor-pointer text-green-400 hover:text-green-900 p-1 rounded-full hover:bg-green-100"
-                  title="ยังชำระเงินไม่ครบ"
+                  title="Payment"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -531,7 +546,7 @@ const handleDeleteBooking = async (id: string) => {
                 <button
                   onClick={() => handleViewDetail(item)}
                   className="cursor-pointer text-purple-500 hover:text-purple-900 p-1 rounded-full hover:bg-purple-100"
-                  title="ดูรายละเอียด"
+                  title="Details"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -556,7 +571,7 @@ const handleDeleteBooking = async (id: string) => {
 
               {item?.status_reservation !== "checked-out" && item?.status_reservation !== "checked-in" && item?.status_reservation !=="canceled" && (
                   <button
-                    onClick={() => handleDeleteBooking(item.id)}
+                    onClick={() => {setIsAlert(true); setIdDelete(item.id);}}
                     className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100 cursor-pointer"
                     title="Delete"
                   >

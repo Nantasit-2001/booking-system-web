@@ -1,8 +1,30 @@
 // components/Footer.tsx
+"use client"
 import Link from 'next/link';
+import { useRef,useState,useEffect } from 'react';
 import { NAV_LINKS, CONTACT_INFO, HOTEL_INFO } from '@/lib/constants';
-const Footer: React.FC = () => {
+import FloatingChat, { FloatingChatHandle } from './FloatingChat';
+
+const Footer = ({ clickOpenChat }: { clickOpenChat?: boolean }) => {
+  const chatRef = useRef<FloatingChatHandle>(null)
+  const [firstRender,setFirstRender] = useState<boolean>(true)
+  
+  const openChat = () => {
+    chatRef.current?.openChat()
+  }
+  
+  useEffect(() => {
+    if(firstRender){
+        setFirstRender(false); 
+        return
+    }else{
+      chatRef.current?.openChat();
+    }
+  }, [clickOpenChat])
+    
   return (
+    <>
+    <FloatingChat ref={chatRef}/>
     <footer id="footer" className="bg-[#221f31] text-white py-12 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Section 1: Hotel Info */}
@@ -36,9 +58,11 @@ const Footer: React.FC = () => {
           <ul className="space-y-2 text-center md:text-left">
             {NAV_LINKS.supportLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="text-gray-300 hover:text-white transition-colors duration-200">
+                <button 
+                  onClick={()=>openChat()}
+                  className="text-gray-300 hover:text-white transition-colors duration-200 cursor-pointer">
                   {link.label}
-                </Link>
+                </button>
               </li>
             ))}
           </ul>
@@ -69,6 +93,7 @@ const Footer: React.FC = () => {
         &copy; {HOTEL_INFO.copyrightYear} {HOTEL_INFO.name}. All rights reserved.
       </div>
     </footer>
+    </>
   );
 };
 

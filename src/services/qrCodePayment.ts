@@ -19,6 +19,7 @@ export async function createQrPayment({
   totalPrice: number;
   deposit:number;
 }) {
+  console.log(userAuthToken)
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json',

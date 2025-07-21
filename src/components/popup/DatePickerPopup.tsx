@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Variants } from 'framer-motion';
+import getMinDate from '@/utils/dateUtils';
+
 type DatePickerPopupProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -67,6 +69,7 @@ const dialogVariants: Variants = {
                 </label>
                 <input
                   type="date"
+                  min={getMinDate()} 
                   id="check-in"
                   className="text-gray-900 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 py-3"
                   value={checkIn}
@@ -82,6 +85,7 @@ const dialogVariants: Variants = {
                 </label>
                 <input
                   type="date"
+                  min={getMinDate(checkIn)} 
                   id="check-out"
                   className="text-gray-900 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 py-3"
                   value={checkOut}

@@ -4,16 +4,13 @@
 import React from 'react';
 import { SearchAvailableRoomsProps } from '@/types/types';
 import { useRoomSearch } from '@/Context/context';
+import getMinDate from '@/utils/dateUtils';
 
 const SearchAvailableRooms: React.FC<{ onSearch: SearchAvailableRoomsProps['onSearch'] }> = ({ onSearch }) => {
   const { checkIn, setCheckIn, checkOut, setCheckOut, guests, setGuests } = useRoomSearch();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!checkIn || !checkOut ) {
-      alert('Please fill in all search fields.');
-      return;
-    }
     onSearch(checkIn, checkOut, guests);
   };
 
@@ -28,6 +25,7 @@ const SearchAvailableRooms: React.FC<{ onSearch: SearchAvailableRoomsProps['onSe
           </label>
           <input
             type="date"
+            min={getMinDate()} 
             id="check-in"
             className="text-gray-900 mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
             value={checkIn}
@@ -43,6 +41,7 @@ const SearchAvailableRooms: React.FC<{ onSearch: SearchAvailableRoomsProps['onSe
           </label>
           <input
             type="date"
+            min={getMinDate(checkIn)} 
             id="check-out"
             className="text-gray-900  mt-1 block w-full rounded-md border-1 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 py-4"
             value={checkOut}

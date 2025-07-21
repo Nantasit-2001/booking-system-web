@@ -1,16 +1,17 @@
 'use client'; // This directive is required for client components in App Router
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef  } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchRoomById } from '@/services/room'; // Import your fetch function
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/footer/InlandingPage';
+import Footer from '@/components/Footer';
 import CardImage from '@/components/card/CardImage';
 import DatePickerPopup from '@/components/popup/DatePickerPopup';
 import { BookingHandler } from '@/components/auth/BlockBooking';
 import { formatNumberWithCommas } from '@/utils/currency';
 import { LoadingComponent } from '@/components/loading';
-import FloatingChat from '@/components/FloatingChat';
+import { FloatingChatHandle } from '@/components/FloatingChat';
+
 interface RoomData {
   id: string;
   room_name: string;
@@ -24,16 +25,16 @@ interface RoomData {
 
 const RoomDetailsPage: React.FC = () => {
   const router = useRouter();
+  const chatRef = useRef<FloatingChatHandle>(null)
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [checkIn, setCheckIn] = useState("");
-const [checkOut, setCheckOut] = useState("");
-const [bookingRequested, setBookingRequested] = useState(false);
-const [resultMessage, setResultMessage] = useState<string | null>(null);
-
-
+  const [checkOut, setCheckOut] = useState("");
+  const [bookingRequested, setBookingRequested] = useState(false);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [clickChat,setClickChat] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchAndSetRoomData = async () => {
@@ -176,7 +177,10 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
 )} {resultMessage && <p className='text-center pt-2'>{resultMessage}</p>}
 
             <div className="text-center text-gray-500 mt-4 text-sm">
-              Need help? <a href="#" className="text-blue-500 hover:underline">Contact us</a>
+              Need help? 
+              <button 
+                onClick={()=>setClickChat(!clickChat)}
+                className="text-blue-500 hover:underline cursor-pointer">Contact us</button>
             </div>
           </div>
         </div>
@@ -188,7 +192,7 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
               <img
                   src={url}
                   className='rounded-2xl absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'
-                  alt=""
+                  alt={`image room ${index}`}
               />
             </div>
           ))}
@@ -196,18 +200,15 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
 
         {/* Room Description */}
         <div className="mt-12 bg-gray-100 p-8 rounded-xl shadow-xl">
-          <h2 className="text-2xl font-semibold pb-3 mb-6">Room Description</h2>
+          <h2 className="text-2xl font-semibold pb-3 mb-2">Room Description</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
             {roomData.description}
-          </p>
-          <p className="text-gray-700 leading-relaxed">
-            Perfect for business travelers or couples seeking a sophisticated retreat, this room offers the ideal blend of functionality and style. Enjoy panoramic city views from the large windows while relaxing in the comfortable seating area.
           </p>
         </div>
 
         {/* Policies - Hardcoded as per image */}
         <div className="mt-12 bg-gray-100 p-8 rounded-xl shadow-xl">
-          <h2 className="text-2xl font-semibold pb-3 mb-6">Policies</h2>
+          <h2 className="text-2xl font-semibold pb-3 mb-3">Policies</h2>
           <div className="grid md:grid-cols-3 gap-6 text-gray-700">
             <div>
               <h3 className="font-medium text-gray-900 mb-2">Check-in</h3>
@@ -221,8 +222,8 @@ const handleBooking = (checkInDate: string, checkOutDate: string) => {
           </div>
         </div>
       </div>
-      <FloatingChat/>
-      <Footer/>
+      {/* <FloatingChat ref={chatRef}/> */}
+      <Footer clickOpenChat={clickChat}/>
     </div>
   );
 };

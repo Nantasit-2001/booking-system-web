@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-
+'use client'
+import React, { useRef,useState } from 'react';
+import { PopupAlert } from '../popup/PopupAlert';
 interface ImageUploadDisplayProps {
   images: File[]; // ✅ เปลี่ยนจาก string[] เป็น File[]
   onImagesChange: (newImages: File[]) => void;
@@ -8,9 +9,35 @@ interface ImageUploadDisplayProps {
 const ImageUploadDisplay: React.FC<ImageUploadDisplayProps> = ({ images, onImagesChange }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+   const [alert, setAlert] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    confirmOnly?: boolean;
+    onConfirm?: () => void;
+  }>({
+    open: false,
+    title: '',
+    message: '',
+    confirmOnly: true,
+  });
+    const showAlert = (title: string, message: string, onConfirm?: () => void) => {
+        setAlert({
+            open: true,
+            title,
+            message,
+            confirmOnly: true,
+            onConfirm: () => {
+            setAlert((prev) => ({ ...prev, open: false }));
+            if (onConfirm) onConfirm();
+            },
+        });
+    };
+
+
   const handleAddImage = () => {
     if (images.length >= 4) {
-      alert('You can add a maximum of 4 images.');
+      showAlert("Error Image",'You can add a maximum of 4 images.');
       return;
     }
     fileInputRef.current?.click(); // เปิด dialog
@@ -22,7 +49,7 @@ const ImageUploadDisplay: React.FC<ImageUploadDisplayProps> = ({ images, onImage
       const total = images.length + selectedFiles.length;
 
       if (total > 4) {
-        alert('You can upload up to 4 images only.');
+        showAlert("Error Image",'You can upload up to 4 images only.');
         return;
       }
 
@@ -33,7 +60,7 @@ const ImageUploadDisplay: React.FC<ImageUploadDisplayProps> = ({ images, onImage
 
   const handleRemoveImage = (index: number) => {
     if (images.length <= 1) {
-      alert('You must have at least 1 image.');
+      showAlert("Error Image",'You must have at least 1 image.');
       return;
     }
     const updatedImages = images.filter((_, i) => i !== index);
@@ -42,6 +69,18 @@ const ImageUploadDisplay: React.FC<ImageUploadDisplayProps> = ({ images, onImage
 
   return (
     <div>
+       <PopupAlert
+        isOpen={alert.open}
+        title={alert.title}
+        message={alert.message}
+        onClose={() => setAlert((prev) => ({ ...prev, open: false }))}
+        onConfirm={() => {
+          setAlert((prev) => ({ ...prev, open: false }));
+          alert.onConfirm?.(); // เรียกฟังก์ชันที่เราสั่งไว้ (onCancel)
+        }}
+        showCancelButton={!alert.confirmOnly}
+      />
+      
       <input
         ref={fileInputRef}
         type="file"

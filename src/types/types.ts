@@ -29,6 +29,7 @@ export interface HotelRoomCardProps {
   imageUrl: string;
   roomName: string;
   pricePerNight: number;
+  maxGuests:number;
   description: string;
   isAvailable: boolean;
 }
@@ -111,6 +112,7 @@ export interface UserBooking {
   };
   rooms: {
     room_name: string;
+    id:string;
     url_picture: string[];
     room_type: string | null;
   };

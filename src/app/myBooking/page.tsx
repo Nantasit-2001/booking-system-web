@@ -4,14 +4,14 @@ import React,{useState, useEffect} from 'react';
 import BookingCard from '@/components/card/UserinfoBookingCard';
 import { UserBooking } from '@/types/types';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/footer/InlandingPage';
+import Footer from '@/components/Footer';
 import { useAuth } from '@clerk/nextjs';
 import { fetchMyBookings } from '@/services/mybooking';
 import BookingDetailPopup from '@/components/popup/BookingDetailPopup';
 import { useRouter } from 'next/navigation';
 import { deleteOrCancelBookingById } from '@/services/booking';
 import { LoadingComponent } from '@/components/loading';
-import FloatingChat from '@/components/FloatingChat';
+import { PopupAlert } from '@/components/popup/PopupAlert';
 
 const MyBookingsPage: React.FC = () => {
   // สมมติว่าคุณมีข้อมูลการจอง array มาจาก API หรือ state
@@ -22,6 +22,13 @@ const MyBookingsPage: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<UserBooking | null>(null);
   const [filter, setFilter] = useState<'ALL' | 'Reserved' | 'Check out' | 'Cancel'>('ALL');
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    confirmOnly?: boolean;
+    onConfirm?: () => void;
+  }>({ open: false, title: '', message: '', confirmOnly: true });
 
 
 const handleView = (booking: UserBooking) => {
@@ -29,20 +36,25 @@ const handleView = (booking: UserBooking) => {
   setIsPopupOpen(true);
 };
 
-const handleBookAgain = () => {
-    router.push(`/rooms/`);
+const handleBookAgain = (id:string) => {
+    router.push(`/rooms/${id}`);
 };
 
 const handleCancel = async (bookingId: string) => {
-  const confirmDelete = window.confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองนี้?');
-  if (!confirmDelete) return; // ❌ ถ้าไม่ยืนยัน ให้หยุดทำงาน
-
   try {
     await deleteOrCancelBookingById(bookingId);
     window.location.reload(); // ✅ รีโหลดหน้าเมื่อยกเลิกเสร็จ
   } catch (error) {
     console.error('Error cancelling booking:', error);
-    alert('ไม่สามารถยกเลิกการจองได้');
+    setAlert({
+          open: true,
+          title: 'An error occurred.',
+          message: 'Reservation cannot be canceled.',
+          confirmOnly: true,
+          onConfirm: () => {
+            setAlert((prev) => ({ ...prev, open: false }));
+          },
+    });
   }
 };
 
@@ -53,6 +65,8 @@ const handleCancel = async (bookingId: string) => {
         if (!token)return;
          const data = await fetchMyBookings(token);
         setBookings(data);
+        console.log(data);
+        
       } catch (err) {
         // แสดง error หรือแจ้งเตือนผู้ใช้
       } finally {
@@ -87,6 +101,15 @@ const handleCancel = async (bookingId: string) => {
         reservation={selectedBooking}
     />
     )}
+     <PopupAlert
+        isOpen={alert.open}
+        title={alert.title}
+        message={alert.message}
+        onClose={() => setAlert({ ...alert, open: false })}
+        onConfirm={alert.onConfirm}
+        showCancelButton={!alert.confirmOnly}
+      />
+
     <div className="bg-gray-200">
     <div className='px-4 md:px-0 py-12'>
       <h1 className="text-4xl font-bold px-4 md:px-12 mb-6">My Bookings</h1>
@@ -139,14 +162,13 @@ const handleCancel = async (bookingId: string) => {
         booking={booking}
         onView={() => handleView(booking)}
         onCancel={() => handleCancel(booking.id)}
-        onBookAgain={() => handleBookAgain()}
+        onBookAgain={() => handleBookAgain(booking.rooms.id)}
       />
     ))
   )}
 </div>
       </div>
     </div>
-    <FloatingChat/>
     <Footer/>
     </>
   );

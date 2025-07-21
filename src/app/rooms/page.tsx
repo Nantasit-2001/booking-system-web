@@ -9,7 +9,7 @@ import { RoomDetail } from "@/types/types";
 import { useRoomSearch } from "@/Context/context";
 import { useRouter } from 'next/navigation'; 
 import { LoadingComponent } from "@/components/loading";
-import FloatingChat from "@/components/FloatingChat";
+import Footer from "@/components/Footer";
 
 const BookingPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomDetail[]>([]);
@@ -19,7 +19,6 @@ const BookingPage: React.FC = () => {
   const [roomType, setRoomType] = useState<string>('');
   const [search,setSearch] = useState<boolean>(true);
   const router = useRouter();
-
   useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
@@ -93,6 +92,7 @@ const BookingPage: React.FC = () => {
             <HotelRoomCard
               key={index}
               id={room.id} // ✅ ส่ง id ไป
+              maxGuests={room.max_guests}
               imageUrl={room.url_picture[0]}
               roomName={room.room_name}
               pricePerNight={Number(room.price)}
@@ -103,7 +103,7 @@ const BookingPage: React.FC = () => {
           ))
         )}
       </div>
-    <FloatingChat/>
+    <Footer />
     </div>
   );
 };

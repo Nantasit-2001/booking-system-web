@@ -19,7 +19,7 @@ const dialogVariants: Variants = {
 
 const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, onSubmit, total, paid }) => {
   const [amountPaidNow, setAmountPaidNow] = useState(0);
-
+  const [error,setError] = useState("")
   const remaining = total - paid;
 
   useEffect(() => {
@@ -28,8 +28,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, onSubmit, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amountPaidNow <= 0) return alert('กรุณากรอกจำนวนเงินที่จ่ายเพิ่มมากกว่า 0');
-    if (amountPaidNow > remaining) return alert('จำนวนเงินเกินยอดคงเหลือ');
+    if (amountPaidNow <= 0) return setError("Please enter the amount you wish to pay more than 0"); 
     onSubmit(amountPaidNow);
     onClose();
   };
@@ -39,7 +38,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, onSubmit, 
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={onClose}
+          onClick={()=>{setError(""); onClose();}}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -74,6 +73,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, onSubmit, 
                     className="text-gray-900 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2"
                     required
                   />
+                  <p className='text-red-600 text-[12px]'>{error?error:""}</p>
                 </div>
 
                 <div className="flex justify-end">

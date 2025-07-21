@@ -46,7 +46,7 @@ const NavBarAdmin: React.FC = () => {
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <div className="h-6 w-6 rounded-full bg-green-600"></div>
+                <div className="h-4 w-4 rounded-full bg-green-600"></div>
                 <span className="text-gray-700 font-semibold">Admin User</span>
                 <button onClick={() => signOut(() => { window.location.href = '/'; })} 
                         className="cursor-pointer ml-4 px-2 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-medium">

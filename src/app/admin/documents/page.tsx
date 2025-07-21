@@ -5,13 +5,14 @@ import NavBarAdmin from "@/components/AdminPage/NavBarAdmin"
 import AdminGuard from "@/components/auth/AdminGuard"
 import { submitDocument } from "@/services/documents"
 import { fetchDocuments,DocumentItem,deleteDocument } from "@/services/documents"
-
+import { PopupAlert } from "@/components/popup/PopupAlert"
 const AdminDocuments: React.FC = () => {
   const [text, setText] = useState("")
   const [message, setMessage] = useState("")
   const [docs, setDocs] = useState<DocumentItem[]>([])
-  const [error, setError] = useState("")
-
+  const [error, setError] = useState<string>("")
+  const [isAlert,setIsAlert] = useState<boolean>(false)
+  const [idDelete,setIdDelete] = useState<number>(0)
   // ✅ ดึงข้อมูลเอกสารตอนโหลดหน้า
 useEffect(() => {
   const loadDocuments = async () => {
@@ -19,7 +20,7 @@ useEffect(() => {
       const data = await fetchDocuments()
       setDocs(data)
     } catch (err: any) {
-      setError(err.message || "เกิดข้อผิดพลาดในการโหลดเอกสาร")
+      setError(err.message || "An error occurred while loading the document.")
     }
   }
 
@@ -39,41 +40,49 @@ useEffect(() => {
       setDocs(updatedDocs)
     } catch (err) {
       console.error("Error submitting:", err)
-      setMessage("❌ เกิดข้อผิดพลาด")
+      setMessage("❌ An error occurred.")
     }
   }
 
   const handleDelete = async (id: number) => {
-  const confirm = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบเอกสารนี้?")
-  if (!confirm) return
-
   try {
     await deleteDocument(id)
     setDocs((prev) => prev.filter((doc) => doc.id !== id))
-    setMessage("✅ ลบเรียบร้อยแล้ว")
+    setMessage("✅ Deleted successfully")
   } catch (err: any) {
     console.error("Delete error:", err)
-    setError(err.message || "❌ ลบเอกสารไม่สำเร็จ")
-  }
+    setError(err.message || "❌ Failed to delete document")
+  }finally{
+    setIsAlert(false)
+    setIdDelete(0)
+    }
   }
   
   return (
     <AdminGuard>
       <NavBarAdmin />
+       <PopupAlert
+        isOpen={isAlert}
+        title={"Are you sure?"}
+        message={"Are you sure you want to delete this document?"}
+        onClose={() => setIsAlert(false)}
+        onConfirm={()=>handleDelete(idDelete)}
+        showCancelButton={true}
+      />  
       <section className="w-full py-10 bg-gray-100 px-40 items-center space-y-10">
         {/* 📝 แบบฟอร์มกรอกข้อมูล */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
             className="w-full p-2 border rounded"
             rows={10}
-            placeholder="บันทึกข้อความ..."
+            placeholder="Write a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             required
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-800"
           >
             Hotel data record
           </button>
@@ -82,7 +91,7 @@ useEffect(() => {
 
        {/* 📄 รายการเอกสารที่บันทึกไว้ */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold">📄 รายการเอกสาร</h2>
+        <h2 className="text-xl font-bold">📄 List of documents</h2>
 
         {error && <p className="text-red-600">{error}</p>}
 
@@ -93,8 +102,8 @@ useEffect(() => {
               className="bg-white p-4 rounded-xl shadow-sm border relative group hover:shadow-md transition"
             >
             <button
-              onClick={() => handleDelete(doc.id)}
-              className="border-2 p-0.5 rounded-lg absolute top-2 right-2 text-back hover:text-red-700 text-sm"
+              onClick={() => {setIsAlert(true); setIdDelete(doc.id);}}
+              className="border-2 p-0.5 rounded-lg absolute top-2 right-2 text-back hover:text-red-700 text-sm cursor-pointer"
               title="ลบเอกสารนี้"
             >
               🗑
@@ -107,7 +116,7 @@ useEffect(() => {
         </ul>
 
         {docs.length === 0 && !error && (
-          <p className="text-gray-500">ไม่มีเอกสารที่บันทึกไว้</p>
+          <p className="text-gray-500">No recorded documents</p>
         )}
       </div>
       </section>

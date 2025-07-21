@@ -2,9 +2,8 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/footer/InlandingPage';
+import Footer from '@/components/Footer';
 import { useRouter } from 'next/navigation';
-import FloatingChat from '@/components/FloatingChat';
 
 const BookingSuccessPage = () => {
   const router = useRouter();
@@ -29,8 +28,7 @@ const BookingSuccessPage = () => {
           </button>
         </div>
       </div>
-      <FloatingChat/>
-      <Footer />
+      <Footer/>
     </>
   );
 };
