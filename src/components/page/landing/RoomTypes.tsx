@@ -39,6 +39,7 @@ const RoomTypes: React.FC = () => {
               key={idx}
               id={data.id} // ✅ ส่ง id ไป
               imageUrl={data.url_picture[0]}
+              maxGuests={data.max_guests}
               roomName={data.room_name}
               pricePerNight={Number(data.price)}
               description={data.description}
