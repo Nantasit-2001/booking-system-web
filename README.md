@@ -1,6 +1,6 @@
 # 🏨 Hotel Booking System (Frontend)
 
-This project is a hotel booking web application developed with a separated frontend and [backend](XXX!!!), allowing users to book hotel rooms, pay deposits via QR code, and interact with an AI-powered chatbot.  
+This project is a hotel booking web application developed with a separated frontend and [backend](https://github.com/Nantasit-2001/booking-system-api/tree/dev), allowing users to book hotel rooms, pay deposits via QR code, and interact with an AI-powered chatbot.  
 The separation of frontend and backend helps maintain clean architecture, easier scaling, and individual deployments for each service.
 
 This project emphasizes modern web practices such as vector search for chatbot answers, admin room control, and real-time booking conflict prevention.
@@ -9,8 +9,8 @@ This project emphasizes modern web practices such as vector search for chatbot a
 
 ## 🔗 Related Links
 
-- Live Demo: [Front-end](XXX!!!)
-- Backend repository: [XXX!!!](XXX!!!)
+- Live Demo: [https://booking-system-web-chi.vercel.app/](https://booking-system-web-chi.vercel.app/)
+- Backend repository: [booking-system-api](https://github.com/Nantasit-2001/booking-system-api/tree/dev)
 
 ---
 
@@ -48,7 +48,7 @@ The frontend and backend are maintained in **separate Git repositories** for bet
 - **Backend:** manages database operations, authentication logic, QR code generation, chatbot processing, and vector search.
 
 You can find the backend code and README here:  
-### 🔗 Backend Repo: [XXX!!!](XXX!!!)
+### 🔗 Backend Repo: [booking-system-api](https://github.com/Nantasit-2001/booking-system-api/tree/dev)
 
 ---
 
